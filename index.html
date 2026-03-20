@@ -4,22 +4,20 @@
   <meta charset="UTF-8" />
   <title>StudyForge Leaderboard</title>
   <style>
-    /* ── CSS custom properties injected by SP are available, but we define our own too ── */
     :root {
-      --sf-accent: #f97316;
-      --sf-gold:   #facc15;
-      --sf-green:  #22c55e;
-      --sf-red:    #ef4444;
-      --sf-bg:     #111113;
-      --sf-surface:#1c1c21;
-      --sf-border: #2c2c35;
-      --sf-text:   #e8e8f0;
-      --sf-muted:  #64647a;
-      --sf-radius: 12px;
+      --sf-accent:  #f97316;
+      --sf-gold:    #facc15;
+      --sf-green:   #22c55e;
+      --sf-red:     #ef4444;
+      --sf-bg:      #111113;
+      --sf-surface: #1c1c21;
+      --sf-surface2:#25252c;
+      --sf-border:  #2c2c35;
+      --sf-text:    #e8e8f0;
+      --sf-muted:   #64647a;
+      --sf-radius:  12px;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: system-ui, -apple-system, sans-serif;
       background: var(--sf-bg);
@@ -28,315 +26,199 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 16px;
+      padding: 16px 16px 80px;
       gap: 12px;
       font-size: 14px;
     }
 
-    /* ── Header ── */
-    .header {
-      width: 100%;
-      max-width: 400px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--sf-border);
-    }
+    /* HEADER */
+    .header { width:100%; max-width:400px; display:flex; align-items:center; justify-content:space-between; padding-bottom:10px; border-bottom:1px solid var(--sf-border); }
+    .logo { font-size:18px; font-weight:800; letter-spacing:-0.5px; background:linear-gradient(120deg,var(--sf-accent),var(--sf-gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .live-dot { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--sf-muted); font-weight:600; letter-spacing:1px; text-transform:uppercase; }
 
-    .logo {
-      font-size: 18px;
-      font-weight: 800;
-      background: linear-gradient(120deg, var(--sf-accent), var(--sf-gold));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -0.5px;
-    }
+    /* TAB NAV */
+    .tab-nav { width:100%; max-width:400px; display:flex; gap:4px; background:var(--sf-surface); border:1px solid var(--sf-border); border-radius:10px; padding:4px; }
+    .tab-btn { flex:1; border:none; background:transparent; color:var(--sf-muted); font-size:12px; font-weight:600; padding:7px 4px; border-radius:7px; cursor:pointer; transition:all .2s; font-family:inherit; }
+    .tab-btn.active { background:linear-gradient(135deg,var(--sf-accent),#fb923c); color:#fff; }
+    .tab-btn:hover:not(.active) { color:var(--sf-text); background:var(--sf-surface2); }
 
-    .live-dot {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      color: var(--sf-muted);
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
+    /* TAB PAGES */
+    .tab-page { display:none; flex-direction:column; gap:12px; align-items:center; width:100%; }
+    .tab-page.active { display:flex; }
 
-    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--sf-muted); }
-    .dot.syncing { background: var(--sf-gold); animation: blink 0.9s infinite; }
-    .dot.synced  { background: var(--sf-green); }
-    .dot.error   { background: var(--sf-red); }
+    /* CARDS */
+    .card { width:100%; max-width:400px; background:var(--sf-surface); border:1px solid var(--sf-border); border-radius:var(--sf-radius); padding:16px; }
+    .card-label { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--sf-muted); margin-bottom:12px; }
 
+    /* USER ROW */
+    .user-row { display:flex; align-items:center; gap:12px; }
+    .avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--sf-accent),var(--sf-gold)); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800; color:#fff; flex-shrink:0; }
+    .user-info { flex:1; min-width:0; }
+    .user-name { font-weight:700; font-size:16px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .user-sub { font-size:11px; color:var(--sf-muted); margin-top:2px; letter-spacing:.5px; }
+
+    /* INPUTS */
+    .input-row { display:flex; gap:8px; }
+    input[type=text] { flex:1; background:var(--sf-bg); border:1px solid var(--sf-border); border-radius:8px; color:var(--sf-text); font-size:13px; font-family:'Courier New',monospace; padding:9px 12px; outline:none; transition:border-color .2s; }
+    input[type=text]:focus { border-color:var(--sf-accent); }
+    input[type=text]::placeholder { color:var(--sf-muted); }
+
+    /* BUTTONS */
+    .btn { border:none; border-radius:8px; cursor:pointer; font-size:12px; font-weight:700; padding:9px 16px; transition:all .15s; white-space:nowrap; font-family:inherit; }
+    .btn-primary { background:linear-gradient(135deg,var(--sf-accent),#fb923c); color:#fff; }
+    .btn-primary:hover { opacity:.85; transform:translateY(-1px); }
+    .btn-primary:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+    .btn-ghost { background:transparent; border:1px solid var(--sf-border); color:var(--sf-text); }
+    .btn-ghost:hover { border-color:var(--sf-accent); color:var(--sf-accent); }
+    .btn-sm { padding:6px 12px; font-size:11px; }
+
+    /* STATS */
+    .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .stat-box { background:var(--sf-bg); border:1px solid var(--sf-border); border-radius:8px; padding:12px; text-align:center; }
+    .stat-val { font-size:26px; font-weight:800; color:var(--sf-accent); line-height:1; }
+    .stat-lbl { font-size:10px; color:var(--sf-muted); letter-spacing:1px; text-transform:uppercase; margin-top:4px; }
+
+    /* SYNC */
+    .sync-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .sync-info { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--sf-muted); }
+    .dot { width:7px; height:7px; border-radius:50%; background:var(--sf-muted); }
+    .dot.syncing { background:var(--sf-gold); animation:blink .9s infinite; }
+    .dot.synced  { background:var(--sf-green); }
+    .dot.error   { background:var(--sf-red); }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+    .row-between { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:12px; }
+    select { background:var(--sf-bg); border:1px solid var(--sf-border); border-radius:7px; color:var(--sf-text); font-size:12px; padding:6px 10px; outline:none; cursor:pointer; font-family:inherit; }
+    select:focus { border-color:var(--sf-accent); }
 
-    /* ── Cards ── */
-    .card {
-      width: 100%;
-      max-width: 400px;
-      background: var(--sf-surface);
-      border: 1px solid var(--sf-border);
-      border-radius: var(--sf-radius);
-      padding: 16px;
-    }
+    /* LB PREVIEW */
+    .lb-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--sf-border); }
+    .lb-row:last-child { border-bottom:none; }
+    .lb-rank { font-size:13px; font-weight:800; width:26px; text-align:center; flex-shrink:0; color:var(--sf-muted); }
+    .lb-name { flex:1; font-size:13px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .lb-time { font-family:'Courier New',monospace; font-size:12px; color:var(--sf-muted); }
+    .lb-me .lb-name { color:var(--sf-accent); }
+    .lb-me .lb-rank { color:var(--sf-accent); }
 
-    .card-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--sf-muted);
-      margin-bottom: 12px;
-    }
+    /* OPEN LB */
+    .open-lb { display:flex; align-items:center; justify-content:space-between; width:100%; max-width:400px; background:linear-gradient(120deg,rgba(249,115,22,.08),rgba(250,204,21,.05)); border:1px solid rgba(249,115,22,.25); border-radius:var(--sf-radius); padding:13px 16px; cursor:pointer; transition:all .2s; }
+    .open-lb:hover { border-color:var(--sf-accent); transform:translateY(-1px); }
+    .open-lb-text { font-size:13px; font-weight:700; color:var(--sf-accent); }
 
-    /* ── User row ── */
-    .user-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--sf-accent), var(--sf-gold));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: 800;
-      color: #fff;
-      flex-shrink: 0;
-      text-shadow: 0 1px 3px rgba(0,0,0,.4);
-    }
-
-    .user-info { flex: 1; min-width: 0; }
-
-    .user-name {
-      font-weight: 700;
-      font-size: 16px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .user-sub {
-      font-size: 11px;
-      color: var(--sf-muted);
-      margin-top: 2px;
-      letter-spacing: 0.5px;
-    }
-
-    /* ── Inputs ── */
-    .input-row { display: flex; gap: 8px; }
-
-    input[type=text] {
-      flex: 1;
-      background: var(--sf-bg);
-      border: 1px solid var(--sf-border);
-      border-radius: 8px;
-      color: var(--sf-text);
-      font-size: 13px;
-      font-family: 'Courier New', monospace;
-      padding: 9px 12px;
-      outline: none;
-      transition: border-color .2s;
-    }
-
-    input[type=text]:focus { border-color: var(--sf-accent); }
-    input[type=text]::placeholder { color: var(--sf-muted); }
-
-    /* ── Buttons ── */
-    .btn {
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 9px 16px;
-      transition: all .15s;
-      white-space: nowrap;
-      font-family: inherit;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--sf-accent), #fb923c);
-      color: #fff;
-    }
-    .btn-primary:hover { opacity: .85; transform: translateY(-1px); }
-    .btn-primary:disabled { opacity: .4; cursor: not-allowed; transform: none; }
-
-    .btn-ghost {
-      background: transparent;
-      border: 1px solid var(--sf-border);
-      color: var(--sf-text);
-    }
-    .btn-ghost:hover { border-color: var(--sf-accent); color: var(--sf-accent); }
-
-    .btn-sm { padding: 6px 12px; font-size: 11px; }
-
-    /* ── Stats grid ── */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .stat-box {
-      background: var(--sf-bg);
-      border: 1px solid var(--sf-border);
-      border-radius: 8px;
-      padding: 12px;
-      text-align: center;
-    }
-
-    .stat-val {
-      font-size: 26px;
-      font-weight: 800;
-      font-variant-numeric: tabular-nums;
-      color: var(--sf-accent);
-      line-height: 1;
-    }
-
-    .stat-lbl {
-      font-size: 10px;
-      color: var(--sf-muted);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-top: 4px;
-    }
-
-    /* ── Sync row ── */
-    .sync-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .sync-info {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: var(--sf-muted);
-    }
-
-    /* ── Leaderboard entries ── */
-    .lb-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--sf-border);
-    }
-    .lb-row:last-child { border-bottom: none; }
-
-    .lb-rank {
-      font-size: 13px;
-      font-weight: 800;
-      width: 26px;
-      text-align: center;
-      flex-shrink: 0;
-      color: var(--sf-muted);
-    }
-
-    .lb-name { flex: 1; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .lb-time { font-family: 'Courier New', monospace; font-size: 12px; color: var(--sf-muted); }
-
-    .lb-me .lb-name { color: var(--sf-accent); }
-    .lb-me .lb-rank { color: var(--sf-accent); }
-
-    /* ── Banner ── */
-    .banner {
-      width: 100%;
-      max-width: 400px;
-      border-radius: 8px;
-      padding: 9px 13px;
-      font-size: 12px;
-      font-family: 'Courier New', monospace;
-      display: none;
-    }
-    .banner.show { display: block; animation: fadeIn .25s; }
-    .banner.success { background: rgba(34,197,94,.1);  border: 1px solid rgba(34,197,94,.3); color: var(--sf-green); }
-    .banner.error   { background: rgba(239,68,68,.1);  border: 1px solid rgba(239,68,68,.3); color: var(--sf-red); }
-    .banner.info    { background: rgba(249,115,22,.1); border: 1px solid rgba(249,115,22,.3); color: var(--sf-accent); }
-
+    /* BANNER */
+    .banner { width:100%; max-width:400px; border-radius:8px; padding:9px 13px; font-size:12px; font-family:'Courier New',monospace; display:none; }
+    .banner.show { display:block; animation:fadeIn .25s; }
+    .banner.success { background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3); color:var(--sf-green); }
+    .banner.error   { background:rgba(239,68,68,.1);  border:1px solid rgba(239,68,68,.3);  color:var(--sf-red); }
+    .banner.info    { background:rgba(249,115,22,.1); border:1px solid rgba(249,115,22,.3); color:var(--sf-accent); }
     @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
 
-    /* ── Open leaderboard link ── */
-    .open-lb {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      max-width: 400px;
-      background: linear-gradient(120deg, rgba(249,115,22,.08), rgba(250,204,21,.05));
-      border: 1px solid rgba(249,115,22,.25);
-      border-radius: var(--sf-radius);
-      padding: 13px 16px;
-      text-decoration: none;
-      transition: all .2s;
-      cursor: pointer;
-    }
-    .open-lb:hover { border-color: var(--sf-accent); transform: translateY(-1px); }
-    .open-lb-text { font-size: 13px; font-weight: 700; color: var(--sf-accent); }
-
-    /* ── Change username inline card ── */
-    #change-card { display: none; }
-
-    /* ── Setup screen ── */
-    #setup-screen { display: flex; flex-direction: column; gap: 12px; align-items: center; width: 100%; }
-    #main-screen  { display: none; flex-direction: column; gap: 12px; align-items: center; width: 100%; }
-
-    .setup-hint {
-      font-size: 12px;
-      color: var(--sf-muted);
-      line-height: 1.6;
-      margin-bottom: 4px;
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 13px; height: 13px;
-      border: 2px solid var(--sf-border);
-      border-top-color: var(--sf-accent);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-      vertical-align: middle;
-      margin-right: 5px;
-    }
+    /* SPINNER */
+    .spinner { display:inline-block; width:13px; height:13px; border:2px solid var(--sf-border); border-top-color:var(--sf-accent); border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; margin-right:5px; }
     @keyframes spin { to{transform:rotate(360deg)} }
 
-    /* ── Auto-sync select ── */
-    .row-between {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-top: 12px;
-    }
+    /* SETUP */
+    #setup-screen { display:flex; flex-direction:column; gap:12px; align-items:center; width:100%; }
+    .setup-hint { font-size:12px; color:var(--sf-muted); line-height:1.6; margin-bottom:4px; }
 
-    select {
-      background: var(--sf-bg);
-      border: 1px solid var(--sf-border);
-      border-radius: 7px;
-      color: var(--sf-text);
-      font-size: 12px;
-      padding: 6px 10px;
-      outline: none;
-      cursor: pointer;
-      font-family: inherit;
+    /* ── CHAT TAB ── */
+    .chat-msgs-area { width:100%; max-width:400px; display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto; padding-right:2px; }
+    .chat-msgs-area::-webkit-scrollbar { width:4px; }
+    .chat-msgs-area::-webkit-scrollbar-thumb { background:var(--sf-border); border-radius:2px; }
+
+    .cm { display:flex; flex-direction:column; gap:3px; animation:fadeIn .2s; }
+    .cm.mine { align-items:flex-end; }
+    .cm-header { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--sf-muted); }
+    .cm.mine .cm-header { flex-direction:row-reverse; }
+    .cm-name { font-weight:700; font-size:11px; }
+    .cm-wrap { display:flex; flex-direction:column; max-width:82%; }
+    .cm.mine .cm-wrap { align-items:flex-end; }
+    .cm-reply { font-size:10px; color:var(--sf-muted); background:rgba(255,255,255,.04); border-left:2px solid var(--sf-accent); padding:3px 7px; border-radius:3px; margin-bottom:2px; }
+    .cm-bubble { padding:8px 11px; border-radius:12px; font-size:13px; line-height:1.4; word-break:break-word; }
+    .cm:not(.mine) .cm-bubble { background:var(--sf-surface2); border:1px solid var(--sf-border); border-bottom-left-radius:3px; }
+    .cm.mine .cm-bubble { background:linear-gradient(135deg,rgba(249,115,22,.22),rgba(250,204,21,.12)); border:1px solid rgba(249,115,22,.25); border-bottom-right-radius:3px; }
+    .cm-edited { font-size:10px; color:var(--sf-muted); margin-top:2px; }
+    .cm-reactions { display:flex; flex-wrap:wrap; gap:3px; margin-top:3px; }
+    .cm-react { display:flex; align-items:center; gap:2px; background:var(--sf-surface2); border:1px solid var(--sf-border); border-radius:20px; padding:2px 7px; font-size:12px; cursor:pointer; transition:all .15s; }
+    .cm-react:hover,.cm-react.mine { border-color:var(--sf-accent); background:rgba(249,115,22,.1); }
+    .cm-react-count { font-size:10px; color:var(--sf-muted); }
+    .cm-actions { display:none; flex-direction:row; gap:4px; margin-top:3px; }
+    .cm:hover .cm-actions { display:flex; }
+    .cm.mine .cm-actions { justify-content:flex-end; }
+    .cm-act { background:var(--sf-surface2); border:1px solid var(--sf-border); border-radius:4px; color:var(--sf-muted); font-size:10px; padding:2px 6px; cursor:pointer; transition:all .15s; font-family:inherit; }
+    .cm-act:hover { border-color:var(--sf-accent); color:var(--sf-accent); }
+    .cm-act.danger:hover { border-color:var(--sf-red); color:var(--sf-red); }
+
+    .reply-bar { display:none; align-items:center; justify-content:space-between; background:rgba(249,115,22,.07); border:1px solid rgba(249,115,22,.2); border-radius:7px; padding:5px 10px; width:100%; max-width:400px; font-size:11px; color:var(--sf-muted); }
+    .reply-bar.show { display:flex; }
+    .reply-bar-close { background:none; border:none; color:var(--sf-muted); cursor:pointer; font-size:14px; padding:0; }
+
+    .chat-input-wrap { width:100%; max-width:400px; display:flex; flex-direction:column; gap:6px; }
+    .chat-input-row { display:flex; gap:6px; align-items:flex-end; }
+    .chat-textarea { flex:1; background:var(--sf-surface); border:1px solid var(--sf-border); border-radius:8px; color:var(--sf-text); font-family:'Courier New',monospace; font-size:13px; padding:9px 12px; outline:none; resize:none; transition:border-color .2s; line-height:1.4; }
+    .chat-textarea:focus { border-color:var(--sf-accent); }
+    .chat-emoji-btn { width:36px; height:36px; border-radius:8px; background:var(--sf-surface); border:1px solid var(--sf-border); cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; flex-shrink:0; align-self:flex-end; transition:all .2s; }
+    .chat-emoji-btn:hover { border-color:var(--sf-accent); }
+    .chat-send-btn { width:36px; height:36px; border-radius:8px; background:var(--sf-accent); border:none; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; align-self:flex-end; transition:all .2s; }
+    .chat-send-btn:hover { opacity:.85; }
+    .chat-send-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+    /* EMOJI PANEL */
+    .emoji-panel { display:none; flex-direction:column; background:var(--sf-surface); border:1px solid var(--sf-border); border-radius:10px; overflow:hidden; width:100%; max-width:400px; }
+    .emoji-panel.open { display:flex; }
+    .emoji-cats { display:flex; gap:2px; padding:5px 6px; border-bottom:1px solid var(--sf-border); background:var(--sf-surface2); overflow-x:auto; }
+    .emoji-cats::-webkit-scrollbar { height:0; }
+    .emoji-cat { background:none; border:none; border-radius:5px; font-size:14px; padding:3px 5px; cursor:pointer; opacity:.5; transition:all .15s; flex-shrink:0; }
+    .emoji-cat:hover { opacity:1; background:rgba(249,115,22,.1); }
+    .emoji-cat.active { opacity:1; background:rgba(249,115,22,.15); outline:1px solid rgba(249,115,22,.3); }
+    .emoji-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:2px; padding:6px; max-height:140px; overflow-y:auto; }
+    .emoji-grid::-webkit-scrollbar { width:3px; }
+    .emoji-grid::-webkit-scrollbar-thumb { background:var(--sf-border); }
+    .emoji-item { font-size:18px; padding:4px; border-radius:5px; cursor:pointer; text-align:center; border:none; background:none; transition:all .1s; }
+    .emoji-item:hover { background:rgba(249,115,22,.12); transform:scale(1.2); }
+
+    /* ── FLOATING CHAT POPUP ── */
+    .chat-fab {
+      position:fixed; bottom:20px; right:20px;
+      width:48px; height:48px; border-radius:50%;
+      background:linear-gradient(135deg,var(--sf-accent),var(--sf-gold));
+      border:none; cursor:pointer; font-size:20px;
+      display:none; align-items:center; justify-content:center;
+      box-shadow:0 4px 16px rgba(249,115,22,.4); z-index:1000;
+      transition:transform .2s;
     }
-    select:focus { border-color: var(--sf-accent); }
+    .chat-fab.visible { display:flex; }
+    .chat-fab:hover { transform:scale(1.1); }
+    .unread-badge { position:absolute; top:-4px; right:-4px; width:16px; height:16px; border-radius:50%; background:var(--sf-red); color:#fff; font-size:9px; font-weight:700; display:none; align-items:center; justify-content:center; border:2px solid var(--sf-bg); }
+    .unread-badge.show { display:flex; }
+
+    .chat-popup {
+      position:fixed; bottom:78px; right:20px;
+      width:300px; max-height:420px;
+      background:var(--sf-surface); border:1px solid rgba(249,115,22,.25);
+      border-radius:14px; display:none; flex-direction:column;
+      box-shadow:0 8px 32px rgba(0,0,0,.5); z-index:999;
+      transform:scale(.9) translateY(10px); transform-origin:bottom right;
+      opacity:0; pointer-events:none;
+      transition:opacity .2s,transform .2s cubic-bezier(.34,1.56,.64,1);
+    }
+    .chat-popup.open { display:flex; transform:scale(1) translateY(0); opacity:1; pointer-events:all; }
+    .popup-header { padding:10px 14px; border-bottom:1px solid var(--sf-border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+    .popup-title { font-size:13px; font-weight:700; color:var(--sf-accent); }
+    .popup-close { background:none; border:none; color:var(--sf-muted); cursor:pointer; font-size:16px; padding:0; line-height:1; }
+    .popup-close:hover { color:var(--sf-text); }
+    .popup-msgs { flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:6px; }
+    .popup-msgs::-webkit-scrollbar { width:3px; }
+    .popup-msgs::-webkit-scrollbar-thumb { background:var(--sf-border); }
+    .popup-input-row { padding:8px; border-top:1px solid var(--sf-border); display:flex; gap:5px; flex-shrink:0; }
+    .popup-textarea { flex:1; background:var(--sf-bg); border:1px solid var(--sf-border); border-radius:6px; color:var(--sf-text); font-family:'Courier New',monospace; font-size:12px; padding:7px 9px; outline:none; resize:none; }
+    .popup-textarea:focus { border-color:var(--sf-accent); }
+    .popup-send { width:30px; height:30px; border-radius:6px; background:var(--sf-accent); border:none; cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; align-self:flex-end; }
+    .popup-send:disabled { opacity:.4; cursor:not-allowed; }
   </style>
 </head>
 <body>
 
-  <!-- ── HEADER ── -->
+  <!-- HEADER -->
   <div class="header">
     <div class="logo">📊 StudyForge</div>
     <div class="live-dot">
@@ -345,10 +227,10 @@
     </div>
   </div>
 
-  <!-- ── BANNER ── -->
+  <!-- BANNER -->
   <div class="banner" id="banner"></div>
 
-  <!-- ══ SETUP SCREEN (no username) ══ -->
+  <!-- SETUP SCREEN -->
   <div id="setup-screen">
     <div class="card">
       <div class="card-label">🎯 Welcome — Set Your Username</div>
@@ -360,424 +242,590 @@
     </div>
   </div>
 
-  <!-- ══ MAIN SCREEN ══ -->
-  <div id="main-screen">
+  <!-- MAIN SCREEN -->
+  <div id="main-screen" style="display:none;flex-direction:column;gap:12px;align-items:center;width:100%;">
 
-    <!-- User card -->
-    <div class="card">
-      <div class="user-row">
-        <div class="avatar" id="avatar">?</div>
-        <div class="user-info">
-          <div class="user-name" id="display-name">—</div>
-          <div class="user-sub">SCHOLAR IN THE ARENA</div>
+    <!-- TAB NAV -->
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('profile',this)">👤 Profile</button>
+      <button class="tab-btn" onclick="switchTab('chat',this)">💬 Chat</button>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div class="tab-page active" id="tab-profile">
+
+      <div class="card">
+        <div class="user-row">
+          <div class="avatar" id="avatar">?</div>
+          <div class="user-info">
+            <div class="user-name" id="display-name">—</div>
+            <div class="user-sub">SCHOLAR IN THE ARENA</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="toggleChangeCard()">✏️</button>
         </div>
-        <button class="btn btn-ghost btn-sm" onclick="toggleChangeCard()">✏️ Change</button>
       </div>
-    </div>
 
-    <!-- Change username inline -->
-    <div class="card" id="change-card">
-      <div class="card-label">✏️ Change Username</div>
-      <div class="input-row">
-        <input type="text" id="change-input" placeholder="new_username" maxlength="30" />
-        <button class="btn btn-primary btn-sm" onclick="confirmChange()">Save</button>
-        <button class="btn btn-ghost btn-sm" onclick="toggleChangeCard()">✕</button>
-      </div>
-    </div>
-
-    <!-- Stats -->
-    <div class="card">
-      <div class="card-label">📊 Today's Stats</div>
-      <div class="stats-grid">
-        <div class="stat-box"><div class="stat-val" id="s-hours">—</div><div class="stat-lbl">Hours</div></div>
-        <div class="stat-box"><div class="stat-val" id="s-mins">—</div><div class="stat-lbl">Minutes</div></div>
-        <div class="stat-box"><div class="stat-val" id="s-tasks">—</div><div class="stat-lbl">Tasks Done</div></div>
-        <div class="stat-box"><div class="stat-val" id="s-rank">—</div><div class="stat-lbl">My Rank</div></div>
-      </div>
-    </div>
-
-    <!-- Sync -->
-    <div class="card">
-      <div class="card-label">☁️ Sync</div>
-      <div class="sync-row">
-        <div class="sync-info">
-          <div class="dot" id="sync-dot2"></div>
-          <span id="sync-text">Not synced yet</span>
+      <div class="card" id="change-card" style="display:none;">
+        <div class="card-label">✏️ Change Username</div>
+        <div class="input-row">
+          <input type="text" id="change-input" placeholder="new_username" maxlength="30" />
+          <button class="btn btn-primary btn-sm" onclick="confirmChange()">Save</button>
+          <button class="btn btn-ghost btn-sm" onclick="toggleChangeCard()">✕</button>
         </div>
-        <button class="btn btn-primary btn-sm" id="sync-btn" onclick="manualSync()">Sync Now</button>
       </div>
-      <div class="row-between">
-        <span style="font-size:12px;color:var(--sf-muted);">Auto-sync every</span>
-        <select id="interval-select" onchange="updateInterval()">
-          <option value="1">1 min</option>
-          <option value="2">2 min</option>
-          <option value="5">5 min</option>
-          <option value="10" selected>10 min</option>
-          <option value="15">15 min</option>
-          <option value="30">30 min</option>
-          <option value="60">1 hour</option>
-        </select>
+
+      <div class="card">
+        <div class="card-label">📊 Today's Stats</div>
+        <div class="stats-grid">
+          <div class="stat-box"><div class="stat-val" id="s-hours">—</div><div class="stat-lbl">Hours</div></div>
+          <div class="stat-box"><div class="stat-val" id="s-mins">—</div><div class="stat-lbl">Minutes</div></div>
+          <div class="stat-box"><div class="stat-val" id="s-tasks">—</div><div class="stat-lbl">Tasks Done</div></div>
+          <div class="stat-box"><div class="stat-val" id="s-rank">—</div><div class="stat-lbl">My Rank</div></div>
+        </div>
       </div>
-    </div>
 
-    <!-- Leaderboard preview -->
-    <div class="card">
-      <div class="card-label" style="display:flex;align-items:center;justify-content:space-between;">
-        <span>🏆 Leaderboard Preview</span>
-        <button id="jump-rank-btn" onclick="jumpToMyRank()" style="display:none;background:linear-gradient(135deg,var(--sf-accent),#fb923c);border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;font-family:inherit;">📍 My Rank</button>
+      <div class="card">
+        <div class="card-label">☁️ Sync</div>
+        <div class="sync-row">
+          <div class="sync-info">
+            <div class="dot" id="sync-dot2"></div>
+            <span id="sync-text">Not synced yet</span>
+          </div>
+          <button class="btn btn-primary btn-sm" id="sync-btn" onclick="manualSync()">Sync Now</button>
+        </div>
+        <div class="row-between">
+          <span style="font-size:12px;color:var(--sf-muted);">Auto-sync every</span>
+          <select id="interval-select" onchange="updateInterval()">
+            <option value="1">1 min</option>
+            <option value="2">2 min</option>
+            <option value="5">5 min</option>
+            <option value="10" selected>10 min</option>
+            <option value="15">15 min</option>
+            <option value="30">30 min</option>
+            <option value="60">1 hour</option>
+          </select>
+        </div>
+        <!-- Chat popup toggle -->
+        <div class="row-between" style="padding-top:10px;border-top:1px solid var(--sf-border);">
+          <div>
+            <div style="font-size:12px;color:var(--sf-text);font-weight:600;">💬 Chat Popup</div>
+            <div style="font-size:10px;color:var(--sf-muted);margin-top:2px;">Floating chat button (bottom-right)</div>
+          </div>
+          <button id="chat-popup-toggle" class="btn btn-ghost btn-sm" onclick="toggleChatPopup()" style="font-size:11px;">Enable</button>
+        </div>
       </div>
-      <div id="lb-list"><div style="text-align:center;color:var(--sf-muted);padding:10px 0;font-size:13px;"><span class="spinner"></span>Loading...</div></div>
-    </div>
 
-    <!-- Open full leaderboard -->
-    <div class="open-lb" onclick="openLeaderboard()">
-      <span class="open-lb-text">🌐 Open Full Leaderboard</span>
-      <span style="color:var(--sf-accent);font-size:18px;">↗</span>
-    </div>
+      <div class="card">
+        <div class="card-label" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>🏆 Leaderboard Preview</span>
+          <button id="jump-rank-btn" onclick="jumpToMyRank()" style="display:none;background:linear-gradient(135deg,var(--sf-accent),#fb923c);border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;font-family:inherit;">📍 My Rank</button>
+        </div>
+        <div id="lb-list"><div style="text-align:center;color:var(--sf-muted);padding:10px 0;font-size:13px;"><span class="spinner"></span>Loading...</div></div>
+      </div>
 
+      <div class="open-lb" onclick="openLeaderboard()">
+        <span class="open-lb-text">🌐 Open Full Leaderboard</span>
+        <span style="color:var(--sf-accent);font-size:18px;">↗</span>
+      </div>
+
+    </div><!-- /tab-profile -->
+
+    <!-- CHAT TAB -->
+    <div class="tab-page" id="tab-chat">
+
+      <div class="chat-msgs-area" id="chat-msgs"></div>
+
+      <div class="reply-bar" id="reply-bar">
+        <span id="reply-bar-text">↩ Replying...</span>
+        <button class="reply-bar-close" onclick="cancelReply()">✕</button>
+      </div>
+
+      <div class="emoji-panel" id="emoji-panel">
+        <div class="emoji-cats">
+          <button class="emoji-cat active" onclick="showEmojiCat('smileys',this)">😊</button>
+          <button class="emoji-cat" onclick="showEmojiCat('gestures',this)">👋</button>
+          <button class="emoji-cat" onclick="showEmojiCat('fire',this)">🔥</button>
+          <button class="emoji-cat" onclick="showEmojiCat('hearts',this)">❤️</button>
+          <button class="emoji-cat" onclick="showEmojiCat('symbols',this)">⭐</button>
+          <button class="emoji-cat" onclick="showEmojiCat('animals',this)">🐶</button>
+          <button class="emoji-cat" onclick="showEmojiCat('food',this)">🍕</button>
+          <button class="emoji-cat" onclick="showEmojiCat('sports',this)">⚽</button>
+        </div>
+        <div class="emoji-grid" id="emoji-grid"></div>
+      </div>
+
+      <div class="chat-input-wrap">
+        <div class="chat-input-row">
+          <button class="chat-emoji-btn" onclick="toggleEmojiPanel()">😊</button>
+          <textarea class="chat-textarea" id="chat-input" placeholder="Type a message…" rows="1"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"
+            oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px'"></textarea>
+          <button class="chat-send-btn" id="chat-send-btn" onclick="sendMsg()">➤</button>
+        </div>
+      </div>
+
+    </div><!-- /tab-chat -->
+
+  </div><!-- /main-screen -->
+
+  <!-- FLOATING CHAT FAB -->
+  <button class="chat-fab" id="chat-fab" onclick="togglePopup()">
+    💬
+    <div class="unread-badge" id="unread-badge"></div>
+  </button>
+
+  <!-- FLOATING CHAT POPUP -->
+  <div class="chat-popup" id="chat-popup">
+    <div class="popup-header">
+      <div class="popup-title">💬 Group Chat</div>
+      <button class="popup-close" onclick="closePopup()">✕</button>
+    </div>
+    <div class="popup-msgs" id="popup-msgs">
+      <div style="text-align:center;color:var(--sf-muted);padding:12px;font-size:11px;">Loading…</div>
+    </div>
+    <div class="popup-input-row">
+      <textarea class="popup-textarea" id="popup-input" placeholder="Message…" rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendPopupMsg();}"
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,70)+'px'"></textarea>
+      <button class="popup-send" id="popup-send" onclick="sendPopupMsg()">➤</button>
+    </div>
   </div>
 
   <script>
-    const LEADERBOARD_URL = 'https://productivity-leaderboard-v2.onrender.com';
-    const STORAGE_KEY = 'studyforge_iframe_v2';
+  const LEADERBOARD_URL = 'https://productivity-leaderboard-v2.onrender.com';
+  const STORAGE_KEY = 'studyforge_iframe_v2';
 
-    let state = { username: null, syncIntervalMins: 10 };
-    let autoTimer = null;
-    let todayMs = 0;
-    let doneTasks = 0;
+  let state = { username: null, syncIntervalMins: 10, chatPopupEnabled: false };
+  let autoTimer = null;
+  let todayMs = 0;
+  let doneTasks = 0;
 
-    // ─── BOOT ──────────────────────────────────────────────────
-    async function boot() {
-      // Load from plugin's synced storage (shared with plugin.js)
-      if (window.PluginAPI) {
-        try {
-          const raw = await PluginAPI.loadSyncedData();
-          if (raw) state = { ...state, ...JSON.parse(raw) };
-        } catch(e) {}
-      }
-      // Fallback: localStorage (same origin)
-      try {
-        const ls = localStorage.getItem(STORAGE_KEY);
-        if (ls) state = { ...state, ...JSON.parse(ls) };
-      } catch(e) {}
+  // ── EMOJI DATA ──────────────────────────────────────────────────────────
+  const EMOJI_CATS = {
+    smileys:  ['😀','😂','🤣','😊','😍','🥰','😘','😎','🤩','🥳','😭','😢','😤','😠','🤯','🥺','😴','🤔','🙄','😏','😒','😌','🤗','😶','🙃','😵','🤪','😜','😝','🤑'],
+    gestures: ['👋','🤚','✋','🖖','🤙','👈','👉','👆','👇','☝️','👍','👎','✊','👊','🤛','🤜','🤞','✌️','🤟','🤘','👌','💪','🙏','👏','🫶'],
+    fire:     ['🔥','💥','⚡','✨','🌟','💫','⭐','🌈','🎯','🏆','🥇','🥈','🥉','🎖️','👑','💎','🔑','⚔️','🛡️','🚀','💡','🎉','🎊','🎈','🎁'],
+    hearts:   ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💕','💞','💓','💗','💖','💘','💝','💟','❣️','💔','💌','💋','😻'],
+    symbols:  ['✅','❌','⚠️','🔔','💬','👀','💯','🔝','💪','🙌','👏','🤝','⚡','🌊','💧','🔥','⭐','🌟','💫','✨','🎯','🏅'],
+    animals:  ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🦝','🐺','🦄','🐴','🦌','🐘','🦒','🦓'],
+    food:     ['🍕','🍔','🌮','🌯','🥗','🍜','🍣','🍱','🍛','🍝','🥪','🌭','🍟','🍿','🥚','🍳','🥞','🍗','🍖','🥩','🧆','🥡'],
+    sports:   ['⚽','🏀','🏈','⚾','🎾','🏐','🏉','🎱','🏓','🏸','🏋️','🥊','🥋','🎽','🛹','⛸️','🏆','🥇','🥈','🥉','🏅','🎯'],
+  };
 
-      if (state.username) {
-        showMain();
-        await refresh();
-        startAuto();
-      } else {
-        showSetup();
-      }
+  // ── BOOT ────────────────────────────────────────────────────────────────
+  async function boot() {
+    if (window.PluginAPI) {
+      try { const raw = await PluginAPI.loadSyncedData(); if (raw) state = {...state,...JSON.parse(raw)}; } catch(e) {}
     }
-
-    function persist() {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
-      if (window.PluginAPI) {
-        try { PluginAPI.persistDataSynced(JSON.stringify(state)); } catch(e) {}
-      }
-    }
-
-    // ─── SCREENS ───────────────────────────────────────────────
-    function showSetup() {
-      document.getElementById('setup-screen').style.display = 'flex';
-      document.getElementById('main-screen').style.display = 'none';
-    }
-
-    function showMain() {
-      document.getElementById('setup-screen').style.display = 'none';
-      document.getElementById('main-screen').style.display = 'flex';
-      document.getElementById('display-name').textContent = state.username;
-      document.getElementById('avatar').textContent = state.username[0].toUpperCase();
-      document.getElementById('interval-select').value = String(state.syncIntervalMins);
-    }
-
-    // ─── USERNAME SETUP ────────────────────────────────────────
-    async function saveUsername() {
-      const val = document.getElementById('setup-input').value.trim();
-      if (!val || val.length < 2) { showBanner('Username must be at least 2 characters.', 'error'); return; }
-
-      const btn = document.querySelector('#setup-screen .btn-primary');
-      btn.disabled = true; btn.textContent = '…';
-
-      // Check if username already exists on the leaderboard
-      try {
-        const r = await fetch(`${LEADERBOARD_URL}/api/leaderboard`, { signal: AbortSignal.timeout(6000) });
-        if (r.ok) {
-          const data = await r.json();
-          const exists = (data.users || []).find(u => u.username === val);
-          if (exists) {
-            showBanner(`❌ "${val}" already exists on the leaderboard. Choose a different name.`, 'error');
-            btn.disabled = false; btn.textContent = 'Let\'s Go 🔥';
-            return;
-          }
-        }
-      } catch(_) {}
-
-      state.username = val;
-      persist();
+    try { const ls = localStorage.getItem(STORAGE_KEY); if (ls) state = {...state,...JSON.parse(ls)}; } catch(e) {}
+    if (state.username) {
       showMain();
-      refresh();
-      startAuto();
-      btn.disabled = false; btn.textContent = 'Let\'s Go 🔥';
-    }
-
-    function toggleChangeCard() {
-      const card = document.getElementById('change-card');
-      const showing = card.style.display === 'block';
-      card.style.display = showing ? 'none' : 'block';
-      if (!showing) {
-        document.getElementById('change-input').value = state.username;
-        document.getElementById('change-input').focus();
-      }
-    }
-
-    async function confirmChange() {
-      const val = document.getElementById('change-input').value.trim();
-      if (!val || val.length < 2) { showBanner('Username must be at least 2 characters.', 'error'); return; }
-      if (val === state.username) { toggleChangeCard(); return; }
-
-      const btn = document.querySelector('#change-card .btn-primary');
-      btn.disabled = true; btn.textContent = '…';
-
-      try {
-        const r = await fetch(`${LEADERBOARD_URL}/api/rename`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ oldUsername: state.username, newUsername: val }),
-          signal: AbortSignal.timeout(8000),
-        });
-        const data = await r.json();
-
-        if (r.ok && data.success) {
-          state.username = val;
-          persist();
-          toggleChangeCard();
-          document.getElementById('display-name').textContent = val;
-          document.getElementById('avatar').textContent = val[0].toUpperCase();
-          // Refresh data then sync new username to leaderboard
-          await refresh();
-          const synced = await doSync();
-          setSyncDot(synced ? 'synced' : 'error');
-          document.getElementById('sync-text').textContent = synced ? 'Synced ' + now() : 'Sync failed';
-          showBanner(`✅ Renamed to "${val}" — history carried over!`, 'success');
-          await fetchLeaderboard();
-        } else if (data.error === 'username_taken') {
-          showBanner(`❌ A user with the name "${val}" already exists. Try a different name.`, 'error');
-        } else if (data.error === 'ip_mismatch') {
-          showBanner('❌ Can only rename from the same device.', 'error');
-        } else {
-          showBanner('❌ Rename failed — try again.', 'error');
-        }
-      } catch(_) {
-        showBanner('❌ Connection error.', 'error');
-      }
-
-      btn.disabled = false; btn.textContent = 'Save';
-      setTimeout(() => hideBanner(), 5000);
-    }
-
-    // ─── GET DATA FROM SP ──────────────────────────────────────
-    async function getTodayData() {
-      todayMs = 0;
-      doneTasks = 0;
-      if (!window.PluginAPI) {
-        // Demo values so UI is not empty
-        todayMs = 2 * 3600000 + 34 * 60000;
-        doneTasks = 5;
-        return;
-      }
-      try {
-        const tasks = await PluginAPI.getTasks();
-        const today = new Date().toISOString().split('T')[0];
-        const dayStart = new Date(); dayStart.setHours(0,0,0,0);
-        for (const t of tasks) {
-          if (t.timeSpentOnDay?.[today]) todayMs += t.timeSpentOnDay[today];
-          if (t.isDone && t.doneOn >= dayStart.getTime()) doneTasks++;
-        }
-      } catch(e) {}
-    }
-
-    // ─── REFRESH UI ────────────────────────────────────────────
-    async function refresh() {
-      await getTodayData();
-      const h = Math.floor(todayMs / 3600000);
-      const m = Math.floor((todayMs % 3600000) / 60000);
-      document.getElementById('s-hours').textContent = h;
-      document.getElementById('s-mins').textContent = m;
-      document.getElementById('s-tasks').textContent = doneTasks;
-      fetchLeaderboard();
-    }
-
-    // ─── FETCH LEADERBOARD PREVIEW ─────────────────────────────
-    async function fetchLeaderboard() {
-      const list = document.getElementById('lb-list');
-      try {
-        // GET /api/leaderboard returns { users: [{username, todayMs, isOnline, ...}], today, challenge }
-        const res = await fetch(`${LEADERBOARD_URL}/api/leaderboard`, { signal: AbortSignal.timeout(8000) });
-        if (!res.ok) throw new Error();
-        const data = await res.json();
-        renderLB(data.users || []);
-      } catch(e) {
-        list.innerHTML = `<div style="text-align:center;color:var(--sf-muted);font-size:12px;padding:10px 0;">Preview unavailable — open full leaderboard ↗</div>`;
-      }
-    }
-
-    function jumpToMyRank() {
-      const me = state.username;
-      if (!me) return;
-      const rows = document.querySelectorAll('#lb-list .lb-row');
-      for (const row of rows) {
-        if (row.querySelector('.lb-name')?.textContent?.includes(me)) {
-          row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          row.style.outline = '2px solid var(--sf-accent)';
-          setTimeout(() => row.style.outline = '', 2000);
-          return;
-        }
-      }
-      // If not visible in preview, open leaderboard
-      window.open(LEADERBOARD_URL, '_blank');
-    }
-
-    function renderLB(users) {
-      const list = document.getElementById('lb-list');
-      const jumpBtn = document.getElementById('jump-rank-btn');
-      const me = state.username || '';
-
-      if (!users?.length) {
-        list.innerHTML = `<div style="text-align:center;color:var(--sf-muted);font-size:13px;padding:10px 0;">No entries today yet.</div>`;
-        document.getElementById('s-rank').textContent = '—';
-        if (jumpBtn) jumpBtn.style.display = 'none';
-        return;
-      }
-
-      const myIdx = users.findIndex(u => u.username === me);
-      document.getElementById('s-rank').textContent = myIdx >= 0 ? `#${myIdx + 1}` : '—';
-      if (jumpBtn) jumpBtn.style.display = myIdx >= 0 ? 'block' : 'none';
-
-      let rows = users.slice(0, 5);
-      if (myIdx >= 5) rows = [...rows, null, users[myIdx]];
-
-      const medals = ['🥇','🥈','🥉'];
-      list.innerHTML = rows.map(u => {
-        if (!u) return `<div style="text-align:center;color:var(--sf-muted);font-size:11px;padding:2px 0">· · ·</div>`;
-        const rank = users.indexOf(u) + 1;
-        const isMe = u.username === me;
-        const ms = u.todayMs || 0;
-        const hh = Math.floor(ms / 3600000);
-        const mm = Math.floor((ms % 3600000) / 60000);
-        const onlineDot = u.isOnline ? `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--sf-green);margin-right:4px;vertical-align:middle;"></span>` : '';
-        return `<div class="lb-row${isMe ? ' lb-me' : ''}">
-          <div class="lb-rank">${medals[rank-1] || rank}</div>
-          <div class="lb-name">${onlineDot}${isMe ? '⭐ ' : ''}${u.username}</div>
-          <div class="lb-time">${hh}h ${mm}m</div>
-        </div>`;
-      }).join('');
-    }
-
-    // ─── SYNC ──────────────────────────────────────────────────
-    async function manualSync() {
-      const btn = document.getElementById('sync-btn');
-      const dot = document.getElementById('sync-dot2');
-      const txt = document.getElementById('sync-text');
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span>';
-      setSyncDot('syncing'); txt.textContent = 'Syncing…';
-
       await refresh();
-      const ok = await doSync();
-
-      if (ok) {
-        setSyncDot('synced'); txt.textContent = 'Synced ' + now();
-        showBanner(`✅ Synced! ${Math.floor(todayMs/3600000)}h ${Math.floor((todayMs%3600000)/60000)}m as "${state.username}"`, 'success');
-      } else {
-        setSyncDot('error'); txt.textContent = 'Failed';
-        showBanner('❌ Sync failed — check your connection.', 'error');
-      }
-
-      btn.disabled = false; btn.textContent = 'Sync Now';
-      setTimeout(() => hideBanner(), 4000);
-    }
-
-    async function doSync() {
-      if (!state.username) return false;
-      // Server expects: POST /api/submit { username, timeSpentMs }
-      const payload = {
-        username: state.username,
-        timeSpentMs: todayMs,
-      };
-      try {
-        const r = await fetch(`${LEADERBOARD_URL}/api/submit`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-          signal: AbortSignal.timeout(8000),
-        });
-        if (r.ok || r.status === 201) return true;
-        const err = await r.json().catch(() => ({}));
-        // ip_conflict: another username already used from this IP
-        if (err.error === 'ip_conflict') {
-          showBanner(`❌ A user "${err.existing}" is already registered from this device.`, 'error');
-        }
-        return false;
-      } catch(_) { return false; }
-    }
-
-    function startAuto() {
-      if (autoTimer) clearInterval(autoTimer);
-      const ms = (state.syncIntervalMins || 10) * 60000;
-      autoTimer = setInterval(async () => {
-        await refresh();
-        const ok = await doSync();
-        const dot = document.getElementById('sync-dot2');
-        const txt = document.getElementById('sync-text');
-        setSyncDot(ok ? 'synced' : 'error');
-        txt.textContent = (ok ? 'Auto-synced ' : 'Sync failed ') + now();
-      }, ms);
-    }
-
-    function updateInterval() {
-      state.syncIntervalMins = parseInt(document.getElementById('interval-select').value);
-      persist();
       startAuto();
-      showBanner(`⏱ Auto-sync: every ${state.syncIntervalMins} min`, 'info');
-      setTimeout(() => hideBanner(), 3000);
+      initChat();
+      updatePopupToggleBtn();
+      if (state.chatPopupEnabled) document.getElementById('chat-fab').classList.add('visible');
+    } else {
+      showSetup();
     }
+  }
 
-    // ─── HELPERS ───────────────────────────────────────────────
-    function setSyncDot(state) {
-      ['sync-dot','sync-dot2'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.className = `dot ${state}`;
-      });
-      const lbl = document.getElementById('sync-label');
-      if (lbl) lbl.textContent = state === 'synced' ? 'Live' : state === 'syncing' ? 'Syncing' : 'Offline';
+  function persist() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+    if (window.PluginAPI) { try { PluginAPI.persistDataSynced(JSON.stringify(state)); } catch(e) {} }
+  }
+
+  // ── SCREENS ─────────────────────────────────────────────────────────────
+  function showSetup() { document.getElementById('setup-screen').style.display='flex'; document.getElementById('main-screen').style.display='none'; }
+  function showMain() {
+    document.getElementById('setup-screen').style.display='none';
+    document.getElementById('main-screen').style.display='flex';
+    document.getElementById('display-name').textContent = state.username;
+    document.getElementById('avatar').textContent = state.username[0].toUpperCase();
+    document.getElementById('interval-select').value = String(state.syncIntervalMins);
+  }
+
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+name).classList.add('active');
+    if (name==='chat') scrollBottom('chat-msgs');
+  }
+
+  // ── USERNAME ─────────────────────────────────────────────────────────────
+  async function saveUsername() {
+    const val = document.getElementById('setup-input').value.trim();
+    if (!val||val.length<2) { showBanner('Username must be at least 2 characters.','error'); return; }
+    const btn = document.querySelector('#setup-screen .btn-primary');
+    btn.disabled=true; btn.textContent='…';
+    try {
+      const r = await fetch(`${LEADERBOARD_URL}/api/leaderboard`,{signal:AbortSignal.timeout(6000)});
+      if (r.ok) { const d=await r.json(); if ((d.users||[]).find(u=>u.username===val)) { showBanner(`❌ "${val}" already exists. Choose a different name.`,'error'); btn.disabled=false; btn.textContent="Let's Go 🔥"; return; } }
+    } catch(_) {}
+    state.username=val; persist(); showMain(); refresh(); startAuto(); initChat(); updatePopupToggleBtn();
+    btn.disabled=false; btn.textContent="Let's Go 🔥";
+  }
+
+  function toggleChangeCard() {
+    const card=document.getElementById('change-card');
+    const showing=card.style.display==='block';
+    card.style.display=showing?'none':'block';
+    if(!showing){document.getElementById('change-input').value=state.username;document.getElementById('change-input').focus();}
+  }
+
+  async function confirmChange() {
+    const val=document.getElementById('change-input').value.trim();
+    if(!val||val.length<2){showBanner('Username must be at least 2 characters.','error');return;}
+    if(val===state.username){toggleChangeCard();return;}
+    const btn=document.querySelector('#change-card .btn-primary');
+    btn.disabled=true; btn.textContent='…';
+    try {
+      const r=await fetch(`${LEADERBOARD_URL}/api/rename`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({oldUsername:state.username,newUsername:val}),signal:AbortSignal.timeout(8000)});
+      const data=await r.json();
+      if(r.ok&&data.success){
+        state.username=val; persist(); toggleChangeCard();
+        document.getElementById('display-name').textContent=val;
+        document.getElementById('avatar').textContent=val[0].toUpperCase();
+        await refresh(); const synced=await doSync();
+        setSyncDot(synced?'synced':'error');
+        document.getElementById('sync-text').textContent=synced?'Synced '+now():'Sync failed';
+        showBanner(`✅ Renamed to "${val}"!`,'success');
+        await fetchLeaderboard();
+      } else if(data.error==='username_taken'){showBanner(`❌ "${val}" already exists. Try a different name.`,'error');}
+      else if(data.error==='ip_mismatch'){showBanner('❌ Can only rename from the same device.','error');}
+      else{showBanner('❌ Rename failed.','error');}
+    } catch(_){showBanner('❌ Connection error.','error');}
+    btn.disabled=false; btn.textContent='Save';
+    setTimeout(()=>hideBanner(),5000);
+  }
+
+  // ── SP DATA ──────────────────────────────────────────────────────────────
+  async function getTodayData() {
+    todayMs=0; doneTasks=0;
+    if(!window.PluginAPI){todayMs=2*3600000+34*60000;doneTasks=5;return;}
+    try {
+      const tasks=await PluginAPI.getTasks();
+      const today=new Date().toISOString().split('T')[0];
+      const dayStart=new Date(); dayStart.setHours(0,0,0,0);
+      for(const t of tasks){
+        if(t.timeSpentOnDay?.[today]) todayMs+=t.timeSpentOnDay[today];
+        if(t.isDone&&t.doneOn>=dayStart.getTime()) doneTasks++;
+      }
+    } catch(e){}
+  }
+
+  async function refresh() {
+    await getTodayData();
+    document.getElementById('s-hours').textContent=Math.floor(todayMs/3600000);
+    document.getElementById('s-mins').textContent=Math.floor((todayMs%3600000)/60000);
+    document.getElementById('s-tasks').textContent=doneTasks;
+    fetchLeaderboard();
+  }
+
+  // ── LEADERBOARD ──────────────────────────────────────────────────────────
+  async function fetchLeaderboard() {
+    try {
+      const res=await fetch(`${LEADERBOARD_URL}/api/leaderboard`,{signal:AbortSignal.timeout(8000)});
+      if(!res.ok) throw new Error();
+      renderLB((await res.json()).users||[]);
+    } catch(e){ document.getElementById('lb-list').innerHTML=`<div style="text-align:center;color:var(--sf-muted);font-size:12px;padding:10px 0;">Preview unavailable ↗</div>`; }
+  }
+
+  function jumpToMyRank() {
+    const me=state.username; if(!me) return;
+    for(const row of document.querySelectorAll('#lb-list .lb-row')){
+      if(row.querySelector('.lb-name')?.textContent?.includes(me)){
+        row.scrollIntoView({behavior:'smooth',block:'center'});
+        row.style.outline='2px solid var(--sf-accent)';
+        setTimeout(()=>row.style.outline='',2000); return;
+      }
     }
+    window.open(LEADERBOARD_URL,'_blank');
+  }
 
-    function now() { return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+  function renderLB(users) {
+    const list=document.getElementById('lb-list');
+    const jumpBtn=document.getElementById('jump-rank-btn');
+    const me=state.username||'';
+    if(!users?.length){list.innerHTML=`<div style="text-align:center;color:var(--sf-muted);font-size:13px;padding:10px 0;">No entries today yet.</div>`;document.getElementById('s-rank').textContent='—';if(jumpBtn)jumpBtn.style.display='none';return;}
+    const myIdx=users.findIndex(u=>u.username===me);
+    document.getElementById('s-rank').textContent=myIdx>=0?`#${myIdx+1}`:'—';
+    if(jumpBtn)jumpBtn.style.display=myIdx>=0?'block':'none';
+    let rows=users.slice(0,5); if(myIdx>=5)rows=[...rows,null,users[myIdx]];
+    const medals=['🥇','🥈','🥉'];
+    list.innerHTML=rows.map(u=>{
+      if(!u)return`<div style="text-align:center;color:var(--sf-muted);font-size:11px;padding:2px 0">· · ·</div>`;
+      const rank=users.indexOf(u)+1,isMe=u.username===me,ms=u.todayMs||0;
+      const hh=Math.floor(ms/3600000),mm=Math.floor((ms%3600000)/60000);
+      const dot=u.isOnline?`<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--sf-green);margin-right:4px;vertical-align:middle;"></span>`:'';
+      return`<div class="lb-row${isMe?' lb-me':''}"><div class="lb-rank">${medals[rank-1]||rank}</div><div class="lb-name">${dot}${isMe?'⭐ ':''}${u.username}</div><div class="lb-time">${hh}h ${mm}m</div></div>`;
+    }).join('');
+  }
 
-    function showBanner(msg, type) {
-      const el = document.getElementById('banner');
-      el.textContent = msg;
-      el.className = `banner show ${type}`;
+  // ── SYNC ─────────────────────────────────────────────────────────────────
+  async function manualSync() {
+    const btn=document.getElementById('sync-btn');
+    btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
+    setSyncDot('syncing'); document.getElementById('sync-text').textContent='Syncing…';
+    await refresh(); const ok=await doSync();
+    if(ok){setSyncDot('synced');document.getElementById('sync-text').textContent='Synced '+now();showBanner(`✅ Synced ${Math.floor(todayMs/3600000)}h ${Math.floor((todayMs%3600000)/60000)}m`,'success');}
+    else{setSyncDot('error');document.getElementById('sync-text').textContent='Failed';showBanner('❌ Sync failed.','error');}
+    btn.disabled=false;btn.textContent='Sync Now';setTimeout(()=>hideBanner(),4000);
+  }
+
+  async function doSync() {
+    if(!state.username) return false;
+    try {
+      const r=await fetch(`${LEADERBOARD_URL}/api/submit`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:state.username,timeSpentMs:todayMs}),signal:AbortSignal.timeout(8000)});
+      if(r.ok||r.status===201) return true;
+      const err=await r.json().catch(()=>({}));
+      if(err.error==='ip_conflict') showBanner(`❌ "${err.existing}" already registered from this device.`,'error');
+      return false;
+    } catch(_){return false;}
+  }
+
+  function startAuto() {
+    if(autoTimer) clearInterval(autoTimer);
+    autoTimer=setInterval(async()=>{await refresh();const ok=await doSync();setSyncDot(ok?'synced':'error');document.getElementById('sync-text').textContent=(ok?'Auto-synced ':'Sync failed ')+now();},(state.syncIntervalMins||10)*60000);
+  }
+
+  function updateInterval() {
+    state.syncIntervalMins=parseInt(document.getElementById('interval-select').value);
+    persist();startAuto();showBanner(`⏱ Auto-sync: every ${state.syncIntervalMins} min`,'info');setTimeout(()=>hideBanner(),3000);
+  }
+
+  // ── CHAT POPUP TOGGLE ────────────────────────────────────────────────────
+  function updatePopupToggleBtn() {
+    const btn=document.getElementById('chat-popup-toggle'); if(!btn) return;
+    btn.textContent=state.chatPopupEnabled?'Disable':'Enable';
+    btn.className=state.chatPopupEnabled?'btn btn-primary btn-sm':'btn btn-ghost btn-sm';
+    btn.style.fontSize='11px';
+  }
+  function toggleChatPopup() {
+    state.chatPopupEnabled=!state.chatPopupEnabled; persist(); updatePopupToggleBtn();
+    const fab=document.getElementById('chat-fab');
+    if(state.chatPopupEnabled) fab.classList.add('visible');
+    else { fab.classList.remove('visible'); closePopup(); }
+  }
+
+  // ── FLOATING POPUP ───────────────────────────────────────────────────────
+  let popupOpen=false;
+  let popupUnread=0;
+
+  function togglePopup() { popupOpen?closePopup():openPopup(); }
+
+  function openPopup() {
+    popupOpen=true;
+    const p=document.getElementById('chat-popup');
+    p.style.display='flex';
+    requestAnimationFrame(()=>p.classList.add('open'));
+    popupUnread=0; updateBadge();
+    renderPopupMsgs();
+    scrollBottom('popup-msgs');
+    setTimeout(()=>document.getElementById('popup-input')?.focus(),200);
+  }
+
+  function closePopup() {
+    popupOpen=false;
+    const p=document.getElementById('chat-popup');
+    p.classList.remove('open');
+    setTimeout(()=>{ if(!popupOpen) p.style.display='none'; },200);
+  }
+
+  function updateBadge() {
+    const b=document.getElementById('unread-badge');
+    if(popupUnread>0){b.textContent=popupUnread>9?'9+':popupUnread;b.classList.add('show');}
+    else b.classList.remove('show');
+  }
+
+  // ── CHAT STATE ───────────────────────────────────────────────────────────
+  let chatMessages=[];
+  let chatLastId=0;
+  let chatReplyTo=null;
+  let chatEditId=null;
+  let chatPollTimer=null;
+  let emojiOpen=false;
+
+  function initChat() {
+    if(chatPollTimer) return;
+    loadChat(true);
+    chatPollTimer=setInterval(()=>loadChat(false),4000);
+  }
+
+  async function loadChat(initial=false) {
+    try {
+      const res=await fetch(`${LEADERBOARD_URL}/api/chat?since=${initial?0:chatLastId}`,{signal:AbortSignal.timeout(6000)});
+      const data=await res.json();
+      if(initial){
+        chatMessages=data.messages||[];
+        chatLastId=chatMessages.length?chatMessages[chatMessages.length-1].id:0;
+        renderAllMsgs(); renderPopupMsgs();
+      } else if(data.messages?.length){
+        chatMessages=[...chatMessages,...data.messages];
+        chatLastId=data.messages[data.messages.length-1].id;
+        data.messages.forEach(m=>{appendMsg('chat-msgs',m,false);appendPopupMsg(m);});
+        scrollBottom('chat-msgs');
+        if(!popupOpen){popupUnread+=data.messages.length;updateBadge();}
+        else scrollBottom('popup-msgs');
+      }
+    } catch(e){}
+  }
+
+  // ── RENDER CHAT TAB ──────────────────────────────────────────────────────
+  function renderAllMsgs() {
+    const c=document.getElementById('chat-msgs'); c.innerHTML='';
+    if(!chatMessages.length){c.innerHTML='<div style="text-align:center;color:var(--sf-muted);padding:20px;font-size:12px;">No messages yet. Say hi! 👋</div>';return;}
+    chatMessages.forEach(m=>appendMsg('chat-msgs',m,false));
+    scrollBottom('chat-msgs');
+  }
+
+  function appendMsg(cid, m, scroll=true) {
+    const c=document.getElementById(cid); if(!c) return;
+    const me=state.username||'', isMine=m.username===me;
+    const color=avatarColor(m.username);
+    const time=new Date(m.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const reactions=m.reactions||{};
+    const replyHtml=m.reply_to?(()=>{const orig=chatMessages.find(x=>x.id===m.reply_to);return orig?`<div class="cm-reply">↩ <b>${esc(orig.username)}</b>: ${esc(orig.message.slice(0,50))}</div>`:''})():'';
+    const reactHtml=Object.entries(reactions).map(([e,us])=>`<span class="cm-react${us.includes(me)?' mine':''}" onclick="toggleReact(${m.id},'${e}')">${e}<span class="cm-react-count">${us.length}</span></span>`).join('');
+    const actR=`<button class="cm-act" onclick="startReply(${m.id},'${esc(m.username)}','${esc(m.message.slice(0,40))}')">↩</button>`;
+    const actE2=`<button class="cm-act" onclick="showReactPicker(${m.id})">😊</button>`;
+    const actEd=isMine?`<button class="cm-act" onclick="startEdit(${m.id},'${esc(m.message)}')">✏️</button>`:'';
+    const actD=isMine?`<button class="cm-act danger" onclick="deleteMsg(${m.id})">🗑️</button>`:'';
+    const div=document.createElement('div');
+    div.className=`cm${isMine?' mine':''}`;div.id=`cmsg-${m.id}`;
+    div.innerHTML=`<div class="cm-header"><span class="cm-name" style="color:${color}">${esc(m.username)}</span><span style="font-size:10px;color:var(--sf-muted)">${time}</span></div><div class="cm-wrap">${replyHtml}<div class="cm-bubble">${esc(m.message)}${m.edited?'<div class="cm-edited">edited</div>':''}</div>${reactHtml?`<div class="cm-reactions">${reactHtml}</div>`:`<div class="cm-reactions" id="cmr-${m.id}"></div>`}<div class="cm-actions">${actR}${actE2}${actEd}${actD}</div></div>`;
+    c.appendChild(div); if(scroll) scrollBottom(cid);
+  }
+
+  // ── RENDER POPUP (simple) ────────────────────────────────────────────────
+  function renderPopupMsgs() {
+    const c=document.getElementById('popup-msgs'); c.innerHTML='';
+    if(!chatMessages.length){c.innerHTML='<div style="text-align:center;color:var(--sf-muted);padding:12px;font-size:11px;">No messages yet 👋</div>';return;}
+    chatMessages.slice(-30).forEach(m=>appendPopupMsg(m));
+    scrollBottom('popup-msgs');
+  }
+
+  function appendPopupMsg(m) {
+    const c=document.getElementById('popup-msgs'); if(!c) return;
+    const me=state.username||'',isMine=m.username===me;
+    const color=avatarColor(m.username);
+    const time=new Date(m.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    // remove old if exists (for updates)
+    document.getElementById(`pmsg-${m.id}`)?.remove();
+    const div=document.createElement('div');
+    div.id=`pmsg-${m.id}`;
+    div.style.cssText=`display:flex;flex-direction:column;gap:2px;align-items:${isMine?'flex-end':'flex-start'};animation:fadeIn .2s;`;
+    div.innerHTML=`<div style="display:flex;gap:4px;align-items:center;${isMine?'flex-direction:row-reverse':''}"><span style="font-size:10px;font-weight:700;color:${color}">${esc(m.username)}</span><span style="font-size:9px;color:var(--sf-muted)">${time}</span></div><div style="max-width:82%;padding:6px 9px;border-radius:10px;font-size:12px;line-height:1.4;word-break:break-word;${isMine?'background:linear-gradient(135deg,rgba(249,115,22,.2),rgba(250,204,21,.1));border:1px solid rgba(249,115,22,.25);border-bottom-right-radius:2px;':'background:var(--sf-surface2);border:1px solid var(--sf-border);border-bottom-left-radius:2px;'}">${esc(m.message)}</div>`;
+    c.appendChild(div);
+  }
+
+  // ── SEND MESSAGES ────────────────────────────────────────────────────────
+  async function sendMsg() {
+    const me=state.username,input=document.getElementById('chat-input'),btn=document.getElementById('chat-send-btn');
+    const msg=input.value.trim(); if(!me||!msg) return;
+    btn.disabled=true; input.value=''; input.style.height='auto';
+    try {
+      if(chatEditId){
+        const r=await fetch(`${LEADERBOARD_URL}/api/chat/${chatEditId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,message:msg})});
+        if(r.ok){const d=await r.json();const idx=chatMessages.findIndex(m=>m.id===chatEditId);if(idx>=0)chatMessages[idx]=d.message;renderAllMsgs();}
+        cancelReply();
+      } else {
+        const r=await fetch(`${LEADERBOARD_URL}/api/chat`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,message:msg,reply_to:chatReplyTo?.id||null})});
+        if(r.ok){const d=await r.json();chatMessages.push(d.message);chatLastId=d.message.id;appendMsg('chat-msgs',d.message);appendPopupMsg(d.message);}
+        cancelReply();
+      }
+    } catch(e){}
+    btn.disabled=false; input.focus();
+  }
+
+  async function sendPopupMsg() {
+    const me=state.username,input=document.getElementById('popup-input'),btn=document.getElementById('popup-send');
+    const msg=input.value.trim(); if(!me||!msg) return;
+    btn.disabled=true; input.value=''; input.style.height='auto';
+    try {
+      const r=await fetch(`${LEADERBOARD_URL}/api/chat`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,message:msg})});
+      if(r.ok){const d=await r.json();chatMessages.push(d.message);chatLastId=d.message.id;appendMsg('chat-msgs',d.message);appendPopupMsg(d.message);scrollBottom('popup-msgs');}
+    } catch(e){}
+    btn.disabled=false; input.focus();
+  }
+
+  async function deleteMsg(id) {
+    const me=state.username; if(!confirm('Delete this message?')) return;
+    const r=await fetch(`${LEADERBOARD_URL}/api/chat/${id}`,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me})});
+    if(r.ok){chatMessages=chatMessages.filter(m=>m.id!==id);document.getElementById(`cmsg-${id}`)?.remove();document.getElementById(`pmsg-${id}`)?.remove();}
+  }
+
+  async function toggleReact(id,emoji) {
+    const me=state.username; if(!me) return;
+    const r=await fetch(`${LEADERBOARD_URL}/api/chat/${id}/react`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,emoji})});
+    if(r.ok){
+      const d=await r.json();
+      const idx=chatMessages.findIndex(m=>m.id===id);if(idx>=0)chatMessages[idx]=d.message;
+      const el=document.getElementById(`cmsg-${id}`);
+      if(el){const tmp=document.createElement('div');el.parentNode.insertBefore(tmp,el);el.remove();appendMsg('chat-msgs',d.message,false);const ne=document.getElementById(`cmsg-${id}`);ne?.parentNode&&ne.parentNode.insertBefore(ne,tmp);tmp.remove();}
     }
+  }
 
-    function hideBanner() {
-      document.getElementById('banner').className = 'banner';
-    }
+  function showReactPicker(id) {
+    const EMOJIS=['👍','👎','🔥','💪','😂','❤️','👑','🎯','😭','🤯'];
+    const existing=document.getElementById(`rp-${id}`);
+    if(existing){existing.remove();return;}
+    const p=document.createElement('div');
+    p.id=`rp-${id}`;
+    p.style.cssText='position:relative;z-index:50;background:var(--sf-surface);border:1px solid var(--sf-border);border-radius:8px;padding:5px 8px;display:flex;gap:4px;flex-wrap:wrap;max-width:200px;box-shadow:0 6px 20px rgba(0,0,0,.4);margin-top:3px;';
+    p.innerHTML=EMOJIS.map(e=>`<span style="font-size:16px;cursor:pointer;padding:2px;" onclick="toggleReact(${id},'${e}');this.closest('[id^=rp-]').remove()">${e}</span>`).join('');
+    const msgEl=document.getElementById(`cmsg-${id}`);
+    if(msgEl){const wrap=msgEl.querySelector('.cm-wrap');if(wrap)wrap.appendChild(p);}
+    setTimeout(()=>document.addEventListener('click',()=>p.remove(),{once:true}),100);
+  }
 
-    function openLeaderboard() {
-      window.open(LEADERBOARD_URL, '_blank');
-    }
+  function startReply(id,username,preview) { chatReplyTo={id,username,message:preview};chatEditId=null;document.getElementById('reply-bar-text').textContent=`↩ ${username}: ${preview}`;document.getElementById('reply-bar').classList.add('show');document.getElementById('chat-input').focus(); }
+  function cancelReply() { chatReplyTo=null;chatEditId=null;document.getElementById('reply-bar').classList.remove('show');document.getElementById('chat-input').value=''; }
+  function startEdit(id,msg) { chatEditId=id;chatReplyTo=null;document.getElementById('reply-bar-text').textContent='✏️ Editing message';document.getElementById('reply-bar').classList.add('show');document.getElementById('chat-input').value=msg;document.getElementById('chat-input').focus(); }
 
-    // ─── KEYBOARD ──────────────────────────────────────────────
-    document.addEventListener('keydown', e => {
-      if (e.key !== 'Enter') return;
-      if (document.getElementById('setup-screen').style.display !== 'none') saveUsername();
-      else if (document.getElementById('change-card').style.display === 'block') confirmChange();
-    });
+  // ── EMOJI PANEL ──────────────────────────────────────────────────────────
+  function toggleEmojiPanel() {
+    emojiOpen=!emojiOpen;
+    document.getElementById('emoji-panel').classList.toggle('open',emojiOpen);
+    if(emojiOpen) showEmojiCat('smileys',document.querySelector('.emoji-cat'));
+  }
+  function showEmojiCat(cat,btn) {
+    document.querySelectorAll('.emoji-cat').forEach(b=>b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    document.getElementById('emoji-grid').innerHTML=(EMOJI_CATS[cat]||[]).map(e=>`<button class="emoji-item" onclick="insertEmoji('${e}')">${e}</button>`).join('');
+  }
+  function insertEmoji(e) {
+    const input=document.getElementById('chat-input');
+    const s=input.selectionStart,end=input.selectionEnd;
+    input.value=input.value.slice(0,s)+e+input.value.slice(end);
+    input.selectionStart=input.selectionEnd=s+e.length;
+    input.focus(); input.dispatchEvent(new Event('input'));
+  }
 
-    // ─── GO ────────────────────────────────────────────────────
-    boot();
+  // ── HELPERS ──────────────────────────────────────────────────────────────
+  function avatarColor(n){const c=['#f97316','#facc15','#22c55e','#a78bfa','#f472b6','#38bdf8'];let h=0;for(const ch of n)h=(h*31+ch.charCodeAt(0))%c.length;return c[Math.abs(h)];}
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function scrollBottom(id){const c=document.getElementById(id);if(c)setTimeout(()=>c.scrollTop=c.scrollHeight,50);}
+  function setSyncDot(s){['sync-dot','sync-dot2'].forEach(id=>{const el=document.getElementById(id);if(el)el.className=`dot ${s}`;});const lbl=document.getElementById('sync-label');if(lbl)lbl.textContent=s==='synced'?'Live':s==='syncing'?'Syncing':'Offline';}
+  function now(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+  function showBanner(msg,type){const el=document.getElementById('banner');el.textContent=msg;el.className=`banner show ${type}`;}
+  function hideBanner(){document.getElementById('banner').className='banner';}
+  function openLeaderboard(){window.open(LEADERBOARD_URL,'_blank');}
+
+  // Close emoji panel / popup on outside click
+  document.addEventListener('click', e => {
+    if(emojiOpen&&!e.target.closest('.emoji-panel')&&!e.target.closest('.chat-emoji-btn')){emojiOpen=false;document.getElementById('emoji-panel')?.classList.remove('open');}
+    if(popupOpen&&!e.target.closest('.chat-popup')&&!e.target.closest('.chat-fab')){closePopup();}
+  });
+
+  document.addEventListener('keydown', e => {
+    if(e.key!=='Enter') return;
+    if(document.getElementById('setup-screen').style.display!=='none') saveUsername();
+    else if(document.getElementById('change-card').style.display==='block') confirmChange();
+  });
+
+  boot();
   </script>
 </body>
 </html>
