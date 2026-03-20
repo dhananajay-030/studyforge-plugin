@@ -1,0 +1,9 @@
+{
+  "id": "studyforge-leaderboard",
+  "name": "StudyForge Leaderboard",
+  "version": "1.0.0",
+  "description": "Syncs your daily study time from Super Productivity to the StudyForge leaderboard. Set your username, track your grind, compete with friends.",
+  "manifestVersion": 1,
+  "minSupVersion": "14.0.0",
+  "iFrame": true
+}

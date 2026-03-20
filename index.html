@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>StudyForge Leaderboard</title>
+  <style>
+    /* ── CSS custom properties injected by SP are available, but we define our own too ── */
+    :root {
+      --sf-accent: #f97316;
+      --sf-gold:   #facc15;
+      --sf-green:  #22c55e;
+      --sf-red:    #ef4444;
+      --sf-bg:     #111113;
+      --sf-surface:#1c1c21;
+      --sf-border: #2c2c35;
+      --sf-text:   #e8e8f0;
+      --sf-muted:  #64647a;
+      --sf-radius: 12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--sf-bg);
+      color: var(--sf-text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    /* ── Header ── */
+    .header {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--sf-border);
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: 800;
+      background: linear-gradient(120deg, var(--sf-accent), var(--sf-gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .live-dot {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--sf-muted);
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--sf-muted); }
+    .dot.syncing { background: var(--sf-gold); animation: blink 0.9s infinite; }
+    .dot.synced  { background: var(--sf-green); }
+    .dot.error   { background: var(--sf-red); }
+
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+    /* ── Cards ── */
+    .card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--sf-surface);
+      border: 1px solid var(--sf-border);
+      border-radius: var(--sf-radius);
+      padding: 16px;
+    }
+
+    .card-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--sf-muted);
+      margin-bottom: 12px;
+    }
+
+    /* ── User row ── */
+    .user-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--sf-accent), var(--sf-gold));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+      text-shadow: 0 1px 3px rgba(0,0,0,.4);
+    }
+
+    .user-info { flex: 1; min-width: 0; }
+
+    .user-name {
+      font-weight: 700;
+      font-size: 16px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .user-sub {
+      font-size: 11px;
+      color: var(--sf-muted);
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Inputs ── */
+    .input-row { display: flex; gap: 8px; }
+
+    input[type=text] {
+      flex: 1;
+      background: var(--sf-bg);
+      border: 1px solid var(--sf-border);
+      border-radius: 8px;
+      color: var(--sf-text);
+      font-size: 13px;
+      font-family: 'Courier New', monospace;
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    input[type=text]:focus { border-color: var(--sf-accent); }
+    input[type=text]::placeholder { color: var(--sf-muted); }
+
+    /* ── Buttons ── */
+    .btn {
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 9px 16px;
+      transition: all .15s;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--sf-accent), #fb923c);
+      color: #fff;
+    }
+    .btn-primary:hover { opacity: .85; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--sf-border);
+      color: var(--sf-text);
+    }
+    .btn-ghost:hover { border-color: var(--sf-accent); color: var(--sf-accent); }
+
+    .btn-sm { padding: 6px 12px; font-size: 11px; }
+
+    /* ── Stats grid ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stat-box {
+      background: var(--sf-bg);
+      border: 1px solid var(--sf-border);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 26px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--sf-accent);
+      line-height: 1;
+    }
+
+    .stat-lbl {
+      font-size: 10px;
+      color: var(--sf-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* ── Sync row ── */
+    .sync-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .sync-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--sf-muted);
+    }
+
+    /* ── Leaderboard entries ── */
+    .lb-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--sf-border);
+    }
+    .lb-row:last-child { border-bottom: none; }
+
+    .lb-rank {
+      font-size: 13px;
+      font-weight: 800;
+      width: 26px;
+      text-align: center;
+      flex-shrink: 0;
+      color: var(--sf-muted);
+    }
+
+    .lb-name { flex: 1; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-time { font-family: 'Courier New', monospace; font-size: 12px; color: var(--sf-muted); }
+
+    .lb-me .lb-name { color: var(--sf-accent); }
+    .lb-me .lb-rank { color: var(--sf-accent); }
+
+    /* ── Banner ── */
+    .banner {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 8px;
+      padding: 9px 13px;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      display: none;
+    }
+    .banner.show { display: block; animation: fadeIn .25s; }
+    .banner.success { background: rgba(34,197,94,.1);  border: 1px solid rgba(34,197,94,.3); color: var(--sf-green); }
+    .banner.error   { background: rgba(239,68,68,.1);  border: 1px solid rgba(239,68,68,.3); color: var(--sf-red); }
+    .banner.info    { background: rgba(249,115,22,.1); border: 1px solid rgba(249,115,22,.3); color: var(--sf-accent); }
+
+    @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── Open leaderboard link ── */
+    .open-lb {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 400px;
+      background: linear-gradient(120deg, rgba(249,115,22,.08), rgba(250,204,21,.05));
+      border: 1px solid rgba(249,115,22,.25);
+      border-radius: var(--sf-radius);
+      padding: 13px 16px;
+      text-decoration: none;
+      transition: all .2s;
+      cursor: pointer;
+    }
+    .open-lb:hover { border-color: var(--sf-accent); transform: translateY(-1px); }
+    .open-lb-text { font-size: 13px; font-weight: 700; color: var(--sf-accent); }
+
+    /* ── Change username inline card ── */
+    #change-card { display: none; }
+
+    /* ── Setup screen ── */
+    #setup-screen { display: flex; flex-direction: column; gap: 12px; align-items: center; width: 100%; }
+    #main-screen  { display: none; flex-direction: column; gap: 12px; align-items: center; width: 100%; }
+
+    .setup-hint {
+      font-size: 12px;
+      color: var(--sf-muted);
+      line-height: 1.6;
+      margin-bottom: 4px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 13px; height: 13px;
+      border: 2px solid var(--sf-border);
+      border-top-color: var(--sf-accent);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+    @keyframes spin { to{transform:rotate(360deg)} }
+
+    /* ── Auto-sync select ── */
+    .row-between {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    select {
+      background: var(--sf-bg);
+      border: 1px solid var(--sf-border);
+      border-radius: 7px;
+      color: var(--sf-text);
+      font-size: 12px;
+      padding: 6px 10px;
+      outline: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    select:focus { border-color: var(--sf-accent); }
+  </style>
+</head>
+<body>
+
+  <!-- ── HEADER ── -->
+  <div class="header">
+    <div class="logo">📊 StudyForge</div>
+    <div class="live-dot">
+      <div class="dot" id="sync-dot"></div>
+      <span id="sync-label">—</span>
+    </div>
+  </div>
+
+  <!-- ── BANNER ── -->
+  <div class="banner" id="banner"></div>
+
+  <!-- ══ SETUP SCREEN (no username) ══ -->
+  <div id="setup-screen">
+    <div class="card">
+      <div class="card-label">🎯 Welcome — Set Your Username</div>
+      <p class="setup-hint">Your name will appear on the StudyForge leaderboard. Once set, your daily study time syncs automatically.</p>
+      <div class="input-row">
+        <input type="text" id="setup-input" placeholder="your_username" maxlength="30" autocomplete="off" />
+        <button class="btn btn-primary" onclick="saveUsername()">Let's Go 🔥</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN SCREEN ══ -->
+  <div id="main-screen">
+
+    <!-- User card -->
+    <div class="card">
+      <div class="user-row">
+        <div class="avatar" id="avatar">?</div>
+        <div class="user-info">
+          <div class="user-name" id="display-name">—</div>
+          <div class="user-sub">SCHOLAR IN THE ARENA</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="toggleChangeCard()">✏️ Change</button>
+      </div>
+    </div>
+
+    <!-- Change username inline -->
+    <div class="card" id="change-card">
+      <div class="card-label">✏️ Change Username</div>
+      <div class="input-row">
+        <input type="text" id="change-input" placeholder="new_username" maxlength="30" />
+        <button class="btn btn-primary btn-sm" onclick="confirmChange()">Save</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleChangeCard()">✕</button>
+      </div>
+      <p style="font-size:11px;color:var(--sf-red);margin-top:8px;font-family:monospace;">⚠️ Old username stays on leaderboard. New entries use new name.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="card">
+      <div class="card-label">📊 Today's Stats</div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-val" id="s-hours">—</div><div class="stat-lbl">Hours</div></div>
+        <div class="stat-box"><div class="stat-val" id="s-mins">—</div><div class="stat-lbl">Minutes</div></div>
+        <div class="stat-box"><div class="stat-val" id="s-tasks">—</div><div class="stat-lbl">Tasks Done</div></div>
+        <div class="stat-box"><div class="stat-val" id="s-rank">—</div><div class="stat-lbl">My Rank</div></div>
+      </div>
+    </div>
+
+    <!-- Sync -->
+    <div class="card">
+      <div class="card-label">☁️ Sync</div>
+      <div class="sync-row">
+        <div class="sync-info">
+          <div class="dot" id="sync-dot2"></div>
+          <span id="sync-text">Not synced yet</span>
+        </div>
+        <button class="btn btn-primary btn-sm" id="sync-btn" onclick="manualSync()">Sync Now</button>
+      </div>
+      <div class="row-between">
+        <span style="font-size:12px;color:var(--sf-muted);">Auto-sync every</span>
+        <select id="interval-select" onchange="updateInterval()">
+          <option value="1">1 min</option>
+          <option value="2">2 min</option>
+          <option value="5">5 min</option>
+          <option value="10" selected>10 min</option>
+          <option value="15">15 min</option>
+          <option value="30">30 min</option>
+          <option value="60">1 hour</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Leaderboard preview -->
+    <div class="card">
+      <div class="card-label">🏆 Leaderboard Preview</div>
+      <div id="lb-list"><div style="text-align:center;color:var(--sf-muted);padding:10px 0;font-size:13px;"><span class="spinner"></span>Loading...</div></div>
+    </div>
+
+    <!-- Open full leaderboard -->
+    <div class="open-lb" onclick="openLeaderboard()">
+      <span class="open-lb-text">🌐 Open Full Leaderboard</span>
+      <span style="color:var(--sf-accent);font-size:18px;">↗</span>
+    </div>
+
+  </div>
+
+  <script>
+    const LEADERBOARD_URL = 'https://productivity-leaderboard-v2.onrender.com';
+    const STORAGE_KEY = 'studyforge_iframe_v2';
+
+    let state = { username: null, syncIntervalMins: 10 };
+    let autoTimer = null;
+    let todayMs = 0;
+    let doneTasks = 0;
+
+    // ─── BOOT ──────────────────────────────────────────────────
+    async function boot() {
+      // Load from plugin's synced storage (shared with plugin.js)
+      if (window.PluginAPI) {
+        try {
+          const raw = await PluginAPI.loadSyncedData();
+          if (raw) state = { ...state, ...JSON.parse(raw) };
+        } catch(e) {}
+      }
+      // Fallback: localStorage (same origin)
+      try {
+        const ls = localStorage.getItem(STORAGE_KEY);
+        if (ls) state = { ...state, ...JSON.parse(ls) };
+      } catch(e) {}
+
+      if (state.username) {
+        showMain();
+        await refresh();
+        startAuto();
+      } else {
+        showSetup();
+      }
+    }
+
+    function persist() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+      if (window.PluginAPI) {
+        try { PluginAPI.persistDataSynced(JSON.stringify(state)); } catch(e) {}
+      }
+    }
+
+    // ─── SCREENS ───────────────────────────────────────────────
+    function showSetup() {
+      document.getElementById('setup-screen').style.display = 'flex';
+      document.getElementById('main-screen').style.display = 'none';
+    }
+
+    function showMain() {
+      document.getElementById('setup-screen').style.display = 'none';
+      document.getElementById('main-screen').style.display = 'flex';
+      document.getElementById('display-name').textContent = state.username;
+      document.getElementById('avatar').textContent = state.username[0].toUpperCase();
+      document.getElementById('interval-select').value = String(state.syncIntervalMins);
+    }
+
+    // ─── USERNAME SETUP ────────────────────────────────────────
+    function saveUsername() {
+      const val = document.getElementById('setup-input').value.trim().replace(/\s+/g, '_').toLowerCase();
+      if (!val || val.length < 2) { showBanner('Username must be at least 2 characters.', 'error'); return; }
+      state.username = val;
+      persist();
+      showMain();
+      refresh();
+      startAuto();
+    }
+
+    function toggleChangeCard() {
+      const card = document.getElementById('change-card');
+      const showing = card.style.display === 'block';
+      card.style.display = showing ? 'none' : 'block';
+      if (!showing) {
+        document.getElementById('change-input').value = state.username;
+        document.getElementById('change-input').focus();
+      }
+    }
+
+    async function confirmChange() {
+      const val = document.getElementById('change-input').value.trim().replace(/\s+/g, '_').toLowerCase();
+      if (!val || val.length < 2) { showBanner('Username must be at least 2 characters.', 'error'); return; }
+      if (val === state.username) { toggleChangeCard(); return; }
+
+      const btn = document.querySelector('#change-card .btn-primary');
+      btn.disabled = true; btn.textContent = '…';
+
+      try {
+        const r = await fetch(`${LEADERBOARD_URL}/api/rename`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ oldUsername: state.username, newUsername: val }),
+          signal: AbortSignal.timeout(8000),
+        });
+        const data = await r.json();
+
+        if (r.ok && data.success) {
+          state.username = val;
+          persist();
+          toggleChangeCard();
+          document.getElementById('display-name').textContent = val;
+          document.getElementById('avatar').textContent = val[0].toUpperCase();
+          showBanner(`✅ Renamed to "${val}" — all history carried over!`, 'success');
+          await refresh();
+          await fetchLeaderboard();
+        } else if (data.error === 'username_taken') {
+          showBanner(`❌ "${val}" is already taken. Try another.`, 'error');
+        } else if (data.error === 'ip_mismatch') {
+          showBanner('❌ Can only rename from the same device.', 'error');
+        } else {
+          showBanner('❌ Rename failed — try again.', 'error');
+        }
+      } catch(_) {
+        showBanner('❌ Connection error.', 'error');
+      }
+
+      btn.disabled = false; btn.textContent = 'Save';
+      setTimeout(() => hideBanner(), 5000);
+    }
+
+    // ─── GET DATA FROM SP ──────────────────────────────────────
+    async function getTodayData() {
+      todayMs = 0;
+      doneTasks = 0;
+      if (!window.PluginAPI) {
+        // Demo values so UI is not empty
+        todayMs = 2 * 3600000 + 34 * 60000;
+        doneTasks = 5;
+        return;
+      }
+      try {
+        const tasks = await PluginAPI.getTasks();
+        const today = new Date().toISOString().split('T')[0];
+        const dayStart = new Date(); dayStart.setHours(0,0,0,0);
+        for (const t of tasks) {
+          if (t.timeSpentOnDay?.[today]) todayMs += t.timeSpentOnDay[today];
+          if (t.isDone && t.doneOn >= dayStart.getTime()) doneTasks++;
+        }
+      } catch(e) {}
+    }
+
+    // ─── REFRESH UI ────────────────────────────────────────────
+    async function refresh() {
+      await getTodayData();
+      const h = Math.floor(todayMs / 3600000);
+      const m = Math.floor((todayMs % 3600000) / 60000);
+      document.getElementById('s-hours').textContent = h;
+      document.getElementById('s-mins').textContent = m;
+      document.getElementById('s-tasks').textContent = doneTasks;
+      fetchLeaderboard();
+    }
+
+    // ─── FETCH LEADERBOARD PREVIEW ─────────────────────────────
+    async function fetchLeaderboard() {
+      const list = document.getElementById('lb-list');
+      try {
+        // GET /api/leaderboard returns { users: [{username, todayMs, isOnline, ...}], today, challenge }
+        const res = await fetch(`${LEADERBOARD_URL}/api/leaderboard`, { signal: AbortSignal.timeout(8000) });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        renderLB(data.users || []);
+      } catch(e) {
+        list.innerHTML = `<div style="text-align:center;color:var(--sf-muted);font-size:12px;padding:10px 0;">Preview unavailable — open full leaderboard ↗</div>`;
+      }
+    }
+
+    function renderLB(users) {
+      const list = document.getElementById('lb-list');
+      const me = (state.username || '').toLowerCase();
+
+      if (!users?.length) {
+        list.innerHTML = `<div style="text-align:center;color:var(--sf-muted);font-size:13px;padding:10px 0;">No entries today yet.</div>`;
+        document.getElementById('s-rank').textContent = '—';
+        return;
+      }
+
+      // Already sorted by todayMs desc from server
+      const myIdx = users.findIndex(u => u.username?.toLowerCase() === me);
+      document.getElementById('s-rank').textContent = myIdx >= 0 ? `#${myIdx + 1}` : '—';
+
+      let rows = users.slice(0, 5);
+      if (myIdx >= 5) rows = [...rows, null, users[myIdx]];
+
+      const medals = ['🥇','🥈','🥉'];
+      list.innerHTML = rows.map(u => {
+        if (!u) return `<div style="text-align:center;color:var(--sf-muted);font-size:11px;padding:2px 0">· · ·</div>`;
+        const rank = users.indexOf(u) + 1;
+        const isMe = u.username?.toLowerCase() === me;
+        const ms = u.todayMs || 0;
+        const hh = Math.floor(ms / 3600000);
+        const mm = Math.floor((ms % 3600000) / 60000);
+        const onlineDot = u.isOnline ? `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--sf-green);margin-right:4px;vertical-align:middle;"></span>` : '';
+        return `<div class="lb-row${isMe ? ' lb-me' : ''}">
+          <div class="lb-rank">${medals[rank-1] || rank}</div>
+          <div class="lb-name">${onlineDot}${isMe ? '⭐ ' : ''}${u.username}</div>
+          <div class="lb-time">${hh}h ${mm}m</div>
+        </div>`;
+      }).join('');
+    }
+
+    // ─── SYNC ──────────────────────────────────────────────────
+    async function manualSync() {
+      const btn = document.getElementById('sync-btn');
+      const dot = document.getElementById('sync-dot2');
+      const txt = document.getElementById('sync-text');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>';
+      setSyncDot('syncing'); txt.textContent = 'Syncing…';
+
+      await refresh();
+      const ok = await doSync();
+
+      if (ok) {
+        setSyncDot('synced'); txt.textContent = 'Synced ' + now();
+        showBanner(`✅ Synced! ${Math.floor(todayMs/3600000)}h ${Math.floor((todayMs%3600000)/60000)}m as "${state.username}"`, 'success');
+      } else {
+        setSyncDot('error'); txt.textContent = 'Failed';
+        showBanner('❌ Sync failed — check your connection.', 'error');
+      }
+
+      btn.disabled = false; btn.textContent = 'Sync Now';
+      setTimeout(() => hideBanner(), 4000);
+    }
+
+    async function doSync() {
+      if (!state.username) return false;
+      // Server expects: POST /api/submit { username, timeSpentMs }
+      const payload = {
+        username: state.username,
+        timeSpentMs: todayMs,
+      };
+      try {
+        const r = await fetch(`${LEADERBOARD_URL}/api/submit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(8000),
+        });
+        if (r.ok || r.status === 201) return true;
+        const err = await r.json().catch(() => ({}));
+        // ip_conflict: another username already used from this IP
+        if (err.error === 'ip_conflict') {
+          showBanner(`⚠️ IP conflict — "${err.existing}" already registered from this device.`, 'error');
+        }
+        return false;
+      } catch(_) { return false; }
+    }
+
+    function startAuto() {
+      if (autoTimer) clearInterval(autoTimer);
+      const ms = (state.syncIntervalMins || 10) * 60000;
+      autoTimer = setInterval(async () => {
+        await refresh();
+        const ok = await doSync();
+        const dot = document.getElementById('sync-dot2');
+        const txt = document.getElementById('sync-text');
+        setSyncDot(ok ? 'synced' : 'error');
+        txt.textContent = (ok ? 'Auto-synced ' : 'Sync failed ') + now();
+      }, ms);
+    }
+
+    function updateInterval() {
+      state.syncIntervalMins = parseInt(document.getElementById('interval-select').value);
+      persist();
+      startAuto();
+      showBanner(`⏱ Auto-sync: every ${state.syncIntervalMins} min`, 'info');
+      setTimeout(() => hideBanner(), 3000);
+    }
+
+    // ─── HELPERS ───────────────────────────────────────────────
+    function setSyncDot(state) {
+      ['sync-dot','sync-dot2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = `dot ${state}`;
+      });
+      const lbl = document.getElementById('sync-label');
+      if (lbl) lbl.textContent = state === 'synced' ? 'Live' : state === 'syncing' ? 'Syncing' : 'Offline';
+    }
+
+    function now() { return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+
+    function showBanner(msg, type) {
+      const el = document.getElementById('banner');
+      el.textContent = msg;
+      el.className = `banner show ${type}`;
+    }
+
+    function hideBanner() {
+      document.getElementById('banner').className = 'banner';
+    }
+
+    function openLeaderboard() {
+      window.open(LEADERBOARD_URL, '_blank');
+    }
+
+    // ─── KEYBOARD ──────────────────────────────────────────────
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      if (document.getElementById('setup-screen').style.display !== 'none') saveUsername();
+      else if (document.getElementById('change-card').style.display === 'block') confirmChange();
+    });
+
+    // ─── GO ────────────────────────────────────────────────────
+    boot();
+  </script>
+</body>
+</html>
