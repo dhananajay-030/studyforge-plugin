@@ -489,14 +489,33 @@
     }
 
     // ─── USERNAME SETUP ────────────────────────────────────────
-    function saveUsername() {
-      const val = document.getElementById('setup-input').value.trim().replace(/\s+/g, '_');
+    async function saveUsername() {
+      const val = document.getElementById('setup-input').value.trim();
       if (!val || val.length < 2) { showBanner('Username must be at least 2 characters.', 'error'); return; }
+
+      const btn = document.querySelector('#setup-screen .btn-primary');
+      btn.disabled = true; btn.textContent = '…';
+
+      // Check if username already exists on the leaderboard
+      try {
+        const r = await fetch(`${LEADERBOARD_URL}/api/leaderboard`, { signal: AbortSignal.timeout(6000) });
+        if (r.ok) {
+          const data = await r.json();
+          const exists = (data.users || []).find(u => u.username === val);
+          if (exists) {
+            showBanner(`❌ "${val}" already exists on the leaderboard. Choose a different name.`, 'error');
+            btn.disabled = false; btn.textContent = 'Let\'s Go 🔥';
+            return;
+          }
+        }
+      } catch(_) {}
+
       state.username = val;
       persist();
       showMain();
       refresh();
       startAuto();
+      btn.disabled = false; btn.textContent = 'Let\'s Go 🔥';
     }
 
     function toggleChangeCard() {
@@ -510,7 +529,7 @@
     }
 
     async function confirmChange() {
-      const val = document.getElementById('change-input').value.trim().replace(/\s+/g, '_');
+      const val = document.getElementById('change-input').value.trim();
       if (!val || val.length < 2) { showBanner('Username must be at least 2 characters.', 'error'); return; }
       if (val === state.username) { toggleChangeCard(); return; }
 
@@ -540,7 +559,7 @@
           showBanner(`✅ Renamed to "${val}" — history carried over!`, 'success');
           await fetchLeaderboard();
         } else if (data.error === 'username_taken') {
-          showBanner(`❌ "${val}" is already taken. Try another.`, 'error');
+          showBanner(`❌ A user with the name "${val}" already exists. Try a different name.`, 'error');
         } else if (data.error === 'ip_mismatch') {
           showBanner('❌ Can only rename from the same device.', 'error');
         } else {
@@ -674,7 +693,7 @@
         const err = await r.json().catch(() => ({}));
         // ip_conflict: another username already used from this IP
         if (err.error === 'ip_conflict') {
-          showBanner(`⚠️ IP conflict — "${err.existing}" already registered from this device.`, 'error');
+          showBanner(`❌ A user "${err.existing}" is already registered from this device.`, 'error');
         }
         return false;
       } catch(_) { return false; }
