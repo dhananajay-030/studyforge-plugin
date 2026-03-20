@@ -383,7 +383,6 @@
         <button class="btn btn-primary btn-sm" onclick="confirmChange()">Save</button>
         <button class="btn btn-ghost btn-sm" onclick="toggleChangeCard()">✕</button>
       </div>
-      <p style="font-size:11px;color:var(--sf-red);margin-top:8px;font-family:monospace;">⚠️ Old username stays on leaderboard. New entries use new name.</p>
     </div>
 
     <!-- Stats -->
@@ -491,7 +490,7 @@
 
     // ─── USERNAME SETUP ────────────────────────────────────────
     function saveUsername() {
-      const val = document.getElementById('setup-input').value.trim().replace(/\s+/g, '_').toLowerCase();
+      const val = document.getElementById('setup-input').value.trim().replace(/\s+/g, '_');
       if (!val || val.length < 2) { showBanner('Username must be at least 2 characters.', 'error'); return; }
       state.username = val;
       persist();
@@ -511,7 +510,7 @@
     }
 
     async function confirmChange() {
-      const val = document.getElementById('change-input').value.trim().replace(/\s+/g, '_').toLowerCase();
+      const val = document.getElementById('change-input').value.trim().replace(/\s+/g, '_');
       if (!val || val.length < 2) { showBanner('Username must be at least 2 characters.', 'error'); return; }
       if (val === state.username) { toggleChangeCard(); return; }
 
@@ -533,8 +532,12 @@
           toggleChangeCard();
           document.getElementById('display-name').textContent = val;
           document.getElementById('avatar').textContent = val[0].toUpperCase();
-          showBanner(`✅ Renamed to "${val}" — all history carried over!`, 'success');
+          // Refresh data then sync new username to leaderboard
           await refresh();
+          const synced = await doSync();
+          setSyncDot(synced ? 'synced' : 'error');
+          document.getElementById('sync-text').textContent = synced ? 'Synced ' + now() : 'Sync failed';
+          showBanner(`✅ Renamed to "${val}" — history carried over!`, 'success');
           await fetchLeaderboard();
         } else if (data.error === 'username_taken') {
           showBanner(`❌ "${val}" is already taken. Try another.`, 'error');
@@ -599,16 +602,14 @@
 
     function renderLB(users) {
       const list = document.getElementById('lb-list');
-      const me = (state.username || '').toLowerCase();
-
+      const me = state.username || '';
       if (!users?.length) {
         list.innerHTML = `<div style="text-align:center;color:var(--sf-muted);font-size:13px;padding:10px 0;">No entries today yet.</div>`;
         document.getElementById('s-rank').textContent = '—';
         return;
       }
 
-      // Already sorted by todayMs desc from server
-      const myIdx = users.findIndex(u => u.username?.toLowerCase() === me);
+      const myIdx = users.findIndex(u => u.username === me);
       document.getElementById('s-rank').textContent = myIdx >= 0 ? `#${myIdx + 1}` : '—';
 
       let rows = users.slice(0, 5);
@@ -618,7 +619,7 @@
       list.innerHTML = rows.map(u => {
         if (!u) return `<div style="text-align:center;color:var(--sf-muted);font-size:11px;padding:2px 0">· · ·</div>`;
         const rank = users.indexOf(u) + 1;
-        const isMe = u.username?.toLowerCase() === me;
+        const isMe = u.username === me;
         const ms = u.todayMs || 0;
         const hh = Math.floor(ms / 3600000);
         const mm = Math.floor((ms % 3600000) / 60000);
