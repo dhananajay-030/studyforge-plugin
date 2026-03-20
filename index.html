@@ -422,7 +422,10 @@
 
     <!-- Leaderboard preview -->
     <div class="card">
-      <div class="card-label">🏆 Leaderboard Preview</div>
+      <div class="card-label" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>🏆 Leaderboard Preview</span>
+        <button id="jump-rank-btn" onclick="jumpToMyRank()" style="display:none;background:linear-gradient(135deg,var(--sf-accent),#fb923c);border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;font-family:inherit;">📍 My Rank</button>
+      </div>
       <div id="lb-list"><div style="text-align:center;color:var(--sf-muted);padding:10px 0;font-size:13px;"><span class="spinner"></span>Loading...</div></div>
     </div>
 
@@ -619,17 +622,37 @@
       }
     }
 
+    function jumpToMyRank() {
+      const me = state.username;
+      if (!me) return;
+      const rows = document.querySelectorAll('#lb-list .lb-row');
+      for (const row of rows) {
+        if (row.querySelector('.lb-name')?.textContent?.includes(me)) {
+          row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          row.style.outline = '2px solid var(--sf-accent)';
+          setTimeout(() => row.style.outline = '', 2000);
+          return;
+        }
+      }
+      // If not visible in preview, open leaderboard
+      window.open(LEADERBOARD_URL, '_blank');
+    }
+
     function renderLB(users) {
       const list = document.getElementById('lb-list');
+      const jumpBtn = document.getElementById('jump-rank-btn');
       const me = state.username || '';
+
       if (!users?.length) {
         list.innerHTML = `<div style="text-align:center;color:var(--sf-muted);font-size:13px;padding:10px 0;">No entries today yet.</div>`;
         document.getElementById('s-rank').textContent = '—';
+        if (jumpBtn) jumpBtn.style.display = 'none';
         return;
       }
 
       const myIdx = users.findIndex(u => u.username === me);
       document.getElementById('s-rank').textContent = myIdx >= 0 ? `#${myIdx + 1}` : '—';
+      if (jumpBtn) jumpBtn.style.display = myIdx >= 0 ? 'block' : 'none';
 
       let rows = users.slice(0, 5);
       if (myIdx >= 5) rows = [...rows, null, users[myIdx]];
