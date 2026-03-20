@@ -121,49 +121,52 @@
     .setup-hint { font-size:12px; color:var(--sf-muted); line-height:1.6; margin-bottom:4px; }
 
     /* ── CHAT TAB ── */
-    .chat-msgs-area { width:100%; max-width:400px; display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto; padding-right:2px; }
+    .chat-msgs-area { width:100%; max-width:400px; display:flex; flex-direction:column; gap:6px; max-height:340px; overflow-y:auto; padding-right:2px; }
     .chat-msgs-area::-webkit-scrollbar { width:4px; }
     .chat-msgs-area::-webkit-scrollbar-thumb { background:var(--sf-border); border-radius:2px; }
 
-    .cm { display:flex; flex-direction:column; gap:3px; animation:fadeIn .2s; }
+    .cm { display:flex; flex-direction:column; gap:2px; animation:fadeIn .2s; }
     .cm.mine { align-items:flex-end; }
     .cm-header { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--sf-muted); }
     .cm.mine .cm-header { flex-direction:row-reverse; }
     .cm-name { font-weight:700; font-size:11px; }
+    /* Bubble row — holds bubble + side actions */
+    .cm-bubble-row { display:flex; align-items:center; gap:4px; }
+    .cm.mine .cm-bubble-row { flex-direction:row-reverse; }
     .cm-wrap { display:flex; flex-direction:column; max-width:82%; }
     .cm.mine .cm-wrap { align-items:flex-end; }
     .cm-reply { font-size:10px; color:var(--sf-muted); background:rgba(255,255,255,.04); border-left:2px solid var(--sf-accent); padding:3px 7px; border-radius:3px; margin-bottom:2px; }
     .cm-bubble { padding:8px 11px; border-radius:12px; font-size:13px; line-height:1.4; word-break:break-word; }
     .cm:not(.mine) .cm-bubble { background:var(--sf-surface2); border:1px solid var(--sf-border); border-bottom-left-radius:3px; }
     .cm.mine .cm-bubble { background:linear-gradient(135deg,rgba(249,115,22,.22),rgba(250,204,21,.12)); border:1px solid rgba(249,115,22,.25); border-bottom-right-radius:3px; }
-    .cm-edited { font-size:10px; color:var(--sf-muted); margin-top:2px; }
+    .cm-edited { font-size:9px; color:var(--sf-muted); margin-top:1px; }
     .cm-reactions { display:flex; flex-wrap:wrap; gap:3px; margin-top:3px; }
     .cm-react { display:flex; align-items:center; gap:2px; background:var(--sf-surface2); border:1px solid var(--sf-border); border-radius:20px; padding:2px 7px; font-size:12px; cursor:pointer; transition:all .15s; }
     .cm-react:hover,.cm-react.mine { border-color:var(--sf-accent); background:rgba(249,115,22,.1); }
     .cm-react-count { font-size:10px; color:var(--sf-muted); }
-    .cm-actions { display:none; flex-direction:row; gap:4px; margin-top:3px; }
+    /* Floating side actions — never cause layout shift */
+    .cm-actions { display:none; flex-direction:row; gap:1px; align-items:center; background:var(--sf-surface); border:1px solid var(--sf-border); border-radius:16px; padding:2px 4px; box-shadow:0 2px 8px rgba(0,0,0,.4); flex-shrink:0; white-space:nowrap; }
     .cm:hover .cm-actions { display:flex; }
-    .cm.mine .cm-actions { justify-content:flex-end; }
-    .cm-act { background:var(--sf-surface2); border:1px solid var(--sf-border); border-radius:4px; color:var(--sf-muted); font-size:10px; padding:2px 6px; cursor:pointer; transition:all .15s; font-family:inherit; }
-    .cm-act:hover { border-color:var(--sf-accent); color:var(--sf-accent); }
-    .cm-act.danger:hover { border-color:var(--sf-red); color:var(--sf-red); }
+    .cm-act { background:none; border:none; color:var(--sf-muted); font-size:13px; padding:2px 4px; cursor:pointer; border-radius:10px; transition:all .15s; line-height:1; }
+    .cm-act:hover { background:rgba(249,115,22,.12); color:var(--sf-accent); }
+    .cm-act.danger:hover { background:rgba(239,68,68,.1); color:var(--sf-red); }
 
     .reply-bar { display:none; align-items:center; justify-content:space-between; background:rgba(249,115,22,.07); border:1px solid rgba(249,115,22,.2); border-radius:7px; padding:5px 10px; width:100%; max-width:400px; font-size:11px; color:var(--sf-muted); }
     .reply-bar.show { display:flex; }
     .reply-bar-close { background:none; border:none; color:var(--sf-muted); cursor:pointer; font-size:14px; padding:0; }
 
-    .chat-input-wrap { width:100%; max-width:400px; display:flex; flex-direction:column; gap:6px; }
+    .chat-input-wrap { width:100%; max-width:400px; display:flex; flex-direction:column; gap:6px; position:relative; }
     .chat-input-row { display:flex; gap:6px; align-items:flex-end; }
     .chat-textarea { flex:1; background:var(--sf-surface); border:1px solid var(--sf-border); border-radius:8px; color:var(--sf-text); font-family:'Courier New',monospace; font-size:13px; padding:9px 12px; outline:none; resize:none; transition:border-color .2s; line-height:1.4; }
     .chat-textarea:focus { border-color:var(--sf-accent); }
-    .chat-emoji-btn { width:36px; height:36px; border-radius:8px; background:var(--sf-surface); border:1px solid var(--sf-border); cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; flex-shrink:0; align-self:flex-end; transition:all .2s; }
-    .chat-emoji-btn:hover { border-color:var(--sf-accent); }
-    .chat-send-btn { width:36px; height:36px; border-radius:8px; background:var(--sf-accent); border:none; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; align-self:flex-end; transition:all .2s; }
-    .chat-send-btn:hover { opacity:.85; }
-    .chat-send-btn:disabled { opacity:.4; cursor:not-allowed; }
+    .chat-emoji-btn { width:36px; height:36px; border-radius:50%; background:transparent; border:none; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; flex-shrink:0; align-self:flex-end; transition:all .2s; color:var(--sf-muted); }
+    .chat-emoji-btn:hover { transform:scale(1.15); color:var(--sf-accent); }
+    .chat-send-btn { width:36px; height:36px; border-radius:50%; background:var(--sf-accent); border:none; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; align-self:flex-end; transition:all .2s; box-shadow:0 2px 8px rgba(249,115,22,.3); }
+    .chat-send-btn:hover { opacity:.85; transform:scale(1.05); }
+    .chat-send-btn:disabled { opacity:.4; cursor:not-allowed; transform:none; }
 
-    /* EMOJI PANEL */
-    .emoji-panel { display:none; flex-direction:column; background:var(--sf-surface); border:1px solid var(--sf-border); border-radius:10px; overflow:hidden; width:100%; max-width:400px; }
+    /* EMOJI PANEL — floats ABOVE input */
+    .emoji-panel { display:none; flex-direction:column; background:var(--sf-surface); border:1px solid var(--sf-border); border-radius:10px; overflow:hidden; width:100%; max-width:400px; position:absolute; bottom:100%; left:0; margin-bottom:6px; z-index:100; box-shadow:0 -6px 24px rgba(0,0,0,.5); }
     .emoji-panel.open { display:flex; }
     .emoji-cats { display:flex; gap:2px; padding:5px 6px; border-bottom:1px solid var(--sf-border); background:var(--sf-surface2); overflow-x:auto; }
     .emoji-cats::-webkit-scrollbar { height:0; }
@@ -688,13 +691,22 @@
     const reactions=m.reactions||{};
     const replyHtml=m.reply_to?(()=>{const orig=chatMessages.find(x=>x.id===m.reply_to);return orig?`<div class="cm-reply">↩ <b>${esc(orig.username)}</b>: ${esc(orig.message.slice(0,50))}</div>`:''})():'';
     const reactHtml=Object.entries(reactions).map(([e,us])=>`<span class="cm-react${us.includes(me)?' mine':''}" onclick="toggleReact(${m.id},'${e}')">${e}<span class="cm-react-count">${us.length}</span></span>`).join('');
-    const actR=`<button class="cm-act" onclick="startReply(${m.id},'${esc(m.username)}','${esc(m.message.slice(0,40))}')">↩</button>`;
-    const actE2=`<button class="cm-act" onclick="showReactPicker(${m.id})">😊</button>`;
-    const actEd=isMine?`<button class="cm-act" onclick="startEdit(${m.id},'${esc(m.message)}')">✏️</button>`:'';
-    const actD=isMine?`<button class="cm-act danger" onclick="deleteMsg(${m.id})">🗑️</button>`:'';
+    const actR=`<button class="cm-act" title="Reply" onclick="startReply(${m.id},'${esc(m.username)}','${esc(m.message.slice(0,40))}')">↩</button>`;
+    const actE2=`<button class="cm-act" title="React" onclick="showReactPicker(${m.id})">😊</button>`;
+    const actEd=isMine?`<button class="cm-act" title="Edit" onclick="startEdit(${m.id},'${esc(m.message)}')">✏️</button>`:'';
+    const actD=isMine?`<button class="cm-act danger" title="Delete" onclick="deleteMsg(${m.id})">🗑️</button>`:'';
     const div=document.createElement('div');
     div.className=`cm${isMine?' mine':''}`;div.id=`cmsg-${m.id}`;
-    div.innerHTML=`<div class="cm-header"><span class="cm-name" style="color:${color}">${esc(m.username)}</span><span style="font-size:10px;color:var(--sf-muted)">${time}</span></div><div class="cm-wrap">${replyHtml}<div class="cm-bubble">${esc(m.message)}${m.edited?'<div class="cm-edited">edited</div>':''}</div>${reactHtml?`<div class="cm-reactions">${reactHtml}</div>`:`<div class="cm-reactions" id="cmr-${m.id}"></div>`}<div class="cm-actions">${actR}${actE2}${actEd}${actD}</div></div>`;
+    div.innerHTML=`
+      <div class="cm-header"><span class="cm-name" style="color:${color}">${esc(m.username)}</span><span style="font-size:9px;color:var(--sf-muted)">${time}</span></div>
+      <div class="cm-bubble-row">
+        <div class="cm-wrap">
+          ${replyHtml}
+          <div class="cm-bubble">${esc(m.message)}${m.edited?'<span class="cm-edited"> · edited</span>':''}</div>
+          ${reactHtml?`<div class="cm-reactions">${reactHtml}</div>`:`<div class="cm-reactions" id="cmr-${m.id}"></div>`}
+        </div>
+        <div class="cm-actions">${actR}${actE2}${actEd}${actD}</div>
+      </div>`;
     c.appendChild(div); if(scroll) scrollBottom(cid);
   }
 
