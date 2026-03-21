@@ -23,12 +23,21 @@
       background: var(--sf-bg);
       color: var(--sf-text);
       min-height: 100vh;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 16px 16px 80px;
+      padding: 16px 16px 16px;
       gap: 12px;
       font-size: 14px;
+      overflow: hidden; /* prevent body scroll */
+    }
+
+    /* When chat is active, body removes padding and centering */
+    body.chat-active {
+      padding: 0;
+      gap: 0;
+      overflow: hidden;
     }
 
     /* HEADER */
@@ -46,18 +55,111 @@
     .tab-page { display:none; flex-direction:column; gap:12px; align-items:center; width:100%; }
     .tab-page.active { display:flex; }
 
-    /* CHAT TAB — takes over full plugin viewport */
+    /* CHAT TAB — fills remaining height, full width */
     #tab-chat {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      z-index: 200;
       display: none;
       flex-direction: column;
-      background: var(--sf-bg);
+      width: 100%;
+      align-items: stretch; /* override body's align-items:center */
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
     }
-    #tab-chat.active {
-      display: flex !important;
+    #tab-chat.active { display: flex !important; }
+
+    /* Header bar — full width */
+    .ct-plug-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--sf-surface);
+      border-bottom: 1px solid var(--sf-border);
+      flex-shrink: 0;
+      width: 100%;
+      box-sizing: border-box;
     }
+    .ct-plug-back { background:none; border:none; color:var(--sf-muted); font-size:18px; cursor:pointer; padding:0; line-height:1; flex-shrink:0; }
+
+    /* Messages area — flex:1 fills space, scrolls */
+    .chat-msgs-area {
+      flex: 1;
+      width: 100%;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: 8px 10px;
+      box-sizing: border-box;
+      min-height: 0;
+    }
+    .chat-msgs-area::-webkit-scrollbar { width:4px; }
+    .chat-msgs-area::-webkit-scrollbar-thumb { background:var(--sf-border); border-radius:2px; }
+
+    /* Bottom input — full width, pinned */
+    .ct-plug-bottom {
+      flex-shrink: 0;
+      width: 100%;
+      background: var(--sf-surface);
+      border-top: 1px solid var(--sf-border);
+      padding: 8px 10px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    /* Messages */
+    .cm { display:flex; flex-direction:column; gap:2px; animation:fadeIn .2s; width:100%; box-sizing:border-box; }
+    .cm.mine { align-items:flex-end; }
+    .cm:not(.mine) { align-items:flex-start; }
+    .cm-header { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--sf-muted); }
+    .cm.mine .cm-header { flex-direction:row-reverse; }
+    .cm-name { font-weight:700; font-size:11px; }
+    .cm-bubble-row { display:flex; align-items:center; gap:4px; max-width:100%; }
+    .cm.mine .cm-bubble-row { flex-direction:row-reverse; }
+    .cm-wrap { display:flex; flex-direction:column; max-width:80%; }
+    .cm.mine .cm-wrap { align-items:flex-end; }
+    .cm:not(.mine) .cm-wrap { align-items:flex-start; }
+    .cm-reply { font-size:10px; color:var(--sf-muted); background:rgba(255,255,255,.04); border-left:2px solid var(--sf-accent); padding:3px 7px; border-radius:3px; margin-bottom:2px; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .cm-bubble { padding:6px 10px; border-radius:12px; font-size:12px; line-height:1.4; word-break:break-word; }
+    .cm:not(.mine) .cm-bubble { background:var(--sf-surface2); border:1px solid var(--sf-border); border-bottom-left-radius:3px; }
+    .cm.mine .cm-bubble { background:linear-gradient(135deg,rgba(249,115,22,.25),rgba(250,204,21,.15)); border:1px solid rgba(249,115,22,.3); border-bottom-right-radius:3px; }
+    .cm-edited { font-size:9px; color:var(--sf-muted); }
+    .cm-reactions { display:flex; flex-wrap:wrap; gap:3px; margin-top:2px; }
+    .cm-react { display:flex; align-items:center; gap:2px; background:var(--sf-surface2); border:1px solid var(--sf-border); border-radius:20px; padding:2px 6px; font-size:11px; cursor:pointer; transition:all .15s; }
+    .cm-react:hover,.cm-react.mine { border-color:var(--sf-accent); background:rgba(249,115,22,.1); }
+    .cm-react-count { font-size:9px; color:var(--sf-muted); }
+    .cm-actions { display:none; flex-direction:row; gap:1px; align-items:center; background:var(--sf-surface); border:1px solid var(--sf-border); border-radius:16px; padding:2px 4px; box-shadow:0 2px 8px rgba(0,0,0,.4); flex-shrink:0; }
+    .cm:hover .cm-actions { display:flex; }
+    .cm-act { background:none; border:none; color:var(--sf-muted); font-size:12px; padding:2px 4px; cursor:pointer; border-radius:8px; transition:all .15s; line-height:1; }
+    .cm-act:hover { background:rgba(249,115,22,.12); color:var(--sf-accent); }
+    .cm-act.danger:hover { background:rgba(239,68,68,.1); color:var(--sf-red); }
+
+    .reply-bar { display:none; align-items:center; justify-content:space-between; background:rgba(249,115,22,.07); border:1px solid rgba(249,115,22,.2); border-radius:7px; padding:5px 10px; font-size:11px; color:var(--sf-muted); margin-bottom:6px; width:100%; box-sizing:border-box; }
+    .reply-bar.show { display:flex; }
+    .reply-bar-close { background:none; border:none; color:var(--sf-muted); cursor:pointer; font-size:14px; padding:0; }
+
+    .chat-input-row { display:flex; gap:6px; align-items:flex-end; width:100%; }
+    .chat-textarea { flex:1; background:var(--sf-surface2); border:1px solid var(--sf-border); border-radius:20px; color:var(--sf-text); font-family:inherit; font-size:13px; padding:8px 14px; outline:none; resize:none; transition:border-color .2s; line-height:1.4; max-height:80px; min-width:0; }
+    .chat-textarea:focus { border-color:var(--sf-accent); }
+    .chat-emoji-btn { width:34px; height:34px; border-radius:50%; background:transparent; border:none; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; flex-shrink:0; align-self:flex-end; color:var(--sf-muted); }
+    .chat-emoji-btn:hover { color:var(--sf-accent); }
+    .chat-send-btn { width:34px; height:34px; border-radius:50%; background:var(--sf-accent); border:none; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; align-self:flex-end; }
+    .chat-send-btn:disabled { opacity:.4; }
+
+    /* Emoji panel — above input */
+    .emoji-panel { display:none; flex-direction:column; background:var(--sf-surface); border:1px solid var(--sf-border); border-radius:10px; overflow:hidden; margin-bottom:6px; width:100%; }
+    .emoji-panel.open { display:flex; }
+    .emoji-cats { display:flex; gap:2px; padding:4px 6px; border-bottom:1px solid var(--sf-border); background:var(--sf-surface2); overflow-x:auto; flex-shrink:0; }
+    .emoji-cats::-webkit-scrollbar { height:0; }
+    .emoji-cat { background:none; border:none; border-radius:5px; font-size:13px; padding:3px 4px; cursor:pointer; opacity:.5; transition:all .15s; flex-shrink:0; }
+    .emoji-cat:hover { opacity:1; background:rgba(249,115,22,.1); }
+    .emoji-cat.active { opacity:1; background:rgba(249,115,22,.15); outline:1px solid rgba(249,115,22,.3); }
+    .emoji-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:1px; padding:5px; max-height:110px; overflow-y:auto; }
+    .emoji-grid::-webkit-scrollbar { width:3px; }
+    .emoji-item { font-size:17px; padding:3px; border-radius:5px; cursor:pointer; text-align:center; border:none; background:none; }
+    .emoji-item:hover { background:rgba(249,115,22,.12); }
 
     /* CARDS */
     .card { width:100%; max-width:400px; background:var(--sf-surface); border:1px solid var(--sf-border); border-radius:var(--sf-radius); padding:16px; }
@@ -356,31 +458,27 @@
 
     </div><!-- /tab-profile -->
 
-    <!-- CHAT TAB — full screen fixed layout -->
+    <!-- CHAT TAB -->
     <div class="tab-page" id="tab-chat">
 
-      <!-- Back button header -->
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--sf-surface);border-bottom:1px solid var(--sf-border);flex-shrink:0;">
-        <button onclick="switchTab('profile',document.querySelector('.tab-btn'))" style="background:none;border:none;color:var(--sf-muted);font-size:18px;cursor:pointer;padding:0;line-height:1;">←</button>
-        <div style="flex:1;">
+      <!-- Header — full width -->
+      <div class="ct-plug-header">
+        <button onclick="switchTab('profile',document.querySelector('.tab-btn'))" class="ct-plug-back">←</button>
+        <div style="flex:1;min-width:0;">
           <div style="font-size:13px;font-weight:700;color:var(--sf-text);">💬 Group Chat</div>
-          <div style="font-size:10px;color:var(--sf-muted);" id="ct-plug-user">—</div>
+          <div style="font-size:10px;color:var(--sf-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="ct-plug-user">—</div>
         </div>
       </div>
 
       <!-- Scrollable messages -->
       <div class="chat-msgs-area" id="chat-msgs"></div>
 
-      <!-- Bottom input area — pinned -->
-      <div style="flex-shrink:0;background:var(--sf-surface);border-top:1px solid var(--sf-border);padding:8px 10px;position:relative;">
-
-        <!-- Reply bar -->
+      <!-- Bottom input — full width, pinned -->
+      <div class="ct-plug-bottom">
         <div class="reply-bar" id="reply-bar">
           <span id="reply-bar-text">↩ Replying...</span>
           <button class="reply-bar-close" onclick="cancelReply()">✕</button>
         </div>
-
-        <!-- Emoji panel — above input -->
         <div class="emoji-panel" id="emoji-panel">
           <div class="emoji-cats">
             <button class="emoji-cat active" onclick="showEmojiCat('smileys',this)">😊</button>
@@ -394,7 +492,6 @@
           </div>
           <div class="emoji-grid" id="emoji-grid"></div>
         </div>
-
         <div class="chat-input-row">
           <button class="chat-emoji-btn" onclick="toggleEmojiPanel()">😊</button>
           <textarea class="chat-textarea" id="chat-input" placeholder="Type a message…" rows="1"
@@ -491,10 +588,24 @@
     if (btn) btn.classList.add('active');
     document.getElementById('tab-'+name).classList.add('active');
     if (name==='chat') {
-      // Update username display in chat header
+      // Hide header/banner/tabnav, make main-screen fill full height
+      document.getElementById('main-screen').style.cssText = 'display:flex;flex-direction:column;flex:1;min-height:0;width:100%;padding:0;gap:0;';
+      document.querySelector('.header')?.style.setProperty('display','none');
+      document.getElementById('banner')?.style.setProperty('display','none');
+      document.querySelector('.tab-nav')?.style.setProperty('display','none');
+      document.body.style.padding = '0';
+      document.body.style.gap = '0';
       const el = document.getElementById('ct-plug-user');
       if (el) el.textContent = state.username ? `Chatting as ${state.username}` : '—';
       scrollBottom('chat-msgs');
+    } else {
+      // Restore normal layout
+      document.getElementById('main-screen').style.cssText = 'display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;';
+      document.querySelector('.header')?.style.removeProperty('display');
+      document.getElementById('banner')?.style.removeProperty('display');
+      document.querySelector('.tab-nav')?.style.removeProperty('display');
+      document.body.style.padding = '';
+      document.body.style.gap = '';
     }
   }
 
